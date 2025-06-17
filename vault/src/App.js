@@ -4,6 +4,7 @@ import 'aos/dist/aos.css';
 
 import Navbar from "./Components/Navbar";
 import HeroSection from "./Components/HeroSection";
+import CarousalSection from "./Components/CarousalSection";
 import AboutSection from "./Components/AboutSection";
 import ClientsSection from "./Components/ClientsSection";
 import Footer from "./Components/Footer";
@@ -19,6 +20,7 @@ function App() {
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <Navbar />
       <HeroSection />
+      <CarousalSection />
       <AboutSection />
       <ClientsSection />
       <Footer />
