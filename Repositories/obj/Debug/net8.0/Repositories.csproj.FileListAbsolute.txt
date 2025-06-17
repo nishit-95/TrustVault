@@ -1,0 +1,12 @@
+C:\Suraksha\TrustVault\Repositories\bin\Debug\net8.0\Repositories.deps.json
+C:\Suraksha\TrustVault\Repositories\bin\Debug\net8.0\Repositories.dll
+C:\Suraksha\TrustVault\Repositories\bin\Debug\net8.0\Repositories.pdb
+C:\Suraksha\TrustVault\Repositories\obj\Debug\net8.0\Repositories.GeneratedMSBuildEditorConfig.editorconfig
+C:\Suraksha\TrustVault\Repositories\obj\Debug\net8.0\Repositories.AssemblyInfoInputs.cache
+C:\Suraksha\TrustVault\Repositories\obj\Debug\net8.0\Repositories.AssemblyInfo.cs
+C:\Suraksha\TrustVault\Repositories\obj\Debug\net8.0\Repositories.csproj.CoreCompileInputs.cache
+C:\Suraksha\TrustVault\Repositories\obj\Debug\net8.0\Repositories.sourcelink.json
+C:\Suraksha\TrustVault\Repositories\obj\Debug\net8.0\Repositories.dll
+C:\Suraksha\TrustVault\Repositories\obj\Debug\net8.0\refint\Repositories.dll
+C:\Suraksha\TrustVault\Repositories\obj\Debug\net8.0\Repositories.pdb
+C:\Suraksha\TrustVault\Repositories\obj\Debug\net8.0\ref\Repositories.dll
