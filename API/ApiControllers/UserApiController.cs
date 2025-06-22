@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using API.Helper;
 using Microsoft.AspNetCore.Mvc;
 using Repositories.Interfaces;
 using Repositories.Models;
@@ -13,16 +15,22 @@ namespace API.ApiControllers
     public class UserApiController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IConfiguration _configuration;
 
-        public UserApiController(IUserService userService)
+
+        public UserApiController(IUserService userService, IConfiguration configuration)
         {
             _userService = userService;
+            _configuration = configuration;
+
         }
-        [HttpGet("Register")]
-        public IActionResult GetRegistrationPage()
+
+         private int GetUserIdFromToken()
         {
-            return Ok(new { message = "User registration page." });
+            var userIdClaim = HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier);
+            return userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
         }
+
 
         [HttpPost("Register")]
         public async Task<IActionResult> RegisterUserAsync([FromBody] t_users user)
@@ -47,11 +55,7 @@ namespace API.ApiControllers
             }
         }
 
-        [HttpGet("Login")]
-        public IActionResult GetLoginPage()
-        {
-            return Ok(new { message = "User login page." });
-        }
+
 
         [HttpPost("Login")]
         public async Task<IActionResult> LoginUserAsync([FromBody] t_users user)
@@ -66,6 +70,7 @@ namespace API.ApiControllers
                 var result = await _userService.LoginAsync(user.c_email, user.c_password);
                 if (result != null)
                 {
+                    string token = JwtHelper.GenerateJwtToken(user, _configuration);
                     return Ok(result);
                 }
                 return Unauthorized("Invalid username or password.");
@@ -75,8 +80,8 @@ namespace API.ApiControllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-        
 
-        
+
+
     }
 }
