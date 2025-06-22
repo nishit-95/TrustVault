@@ -10,7 +10,7 @@ namespace Repositories.Models
         public int c_user_id { get; set; }
         public string c_full_name { get; set; }
         public string c_email { get; set; }
-        public string c_password_hash { get; set; }
+        public string c_password { get; set; }
         public string? c_phone { get; set; }
         public string? c_country { get; set; }
         public DateTime c_created_at { get; set; }
