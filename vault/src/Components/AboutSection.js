@@ -3,7 +3,7 @@ import React from "react";
 export default function AboutSection() {
   return (
     <section
-      className="px-6 py-20 bg-gradient-to-br from-blue-50 to-white dark:from-gray-800 dark:to-gray-900"
+      className="px-6 py-20 bg-gradient-to-br from-blue-50 to-white dark:from-gray-800 dark:to-gray-900 relative overflow-hidden"
       data-aos="fade-up"
       data-aos-duration="1000"
     >
