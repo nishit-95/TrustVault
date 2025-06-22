@@ -1,24 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect } from 'react';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
+import Navbar from "./Components/Navbar";
+import HeroSection from "./Components/HeroSection";
+import CarousalSection from "./Components/CarousalSection";
+import AboutSection from "./Components/AboutSection";
+import ClientsSection from "./Components/ClientsSection";
+import Footer from "./Components/Footer";
 function App() {
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: false, // 👈 important: allows animation to repeat when scrolling again
+    });
+    AOS.refresh(); // 👈 refresh on update
+  }, []);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="min-h-screen bg-white dark:bg-gray-900">
+      <Navbar />
+      <HeroSection />
+      <CarousalSection />
+      <AboutSection />
+      <ClientsSection />
+      <Footer />
     </div>
+    
   );
 }
 
