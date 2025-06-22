@@ -2,8 +2,13 @@ import { useEffect, useState } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { Eye, EyeOff } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+const countries = ["India", "United States", "Canada", "Germany", "Australia", "Japan", "France"];
 
 export default function RegisterPage() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -13,21 +18,57 @@ export default function RegisterPage() {
     country: "",
   });
 
+  const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
 
   useEffect(() => {
     AOS.init({ duration: 1000, once: false });
     AOS.refresh();
   }, []);
 
+  const validateField = (name, value) => {
+    switch (name) {
+      case "fullName":
+        return !value || value.length > 20 ? "Name is required and must be under 20 characters." : "";
+      case "email":
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? "" : "Enter a valid email address.";
+      case "phone":
+        return /^\d{10}$/.test(value) ? "" : "Phone number must be exactly 10 digits.";
+      case "country":
+        return countries.includes(value) ? "" : "Please select a valid country.";
+      case "password":
+        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,15}$/.test(value) ? "" : "Password must be 8-15 characters with upper, lower, digit, and special character.";
+      case "confirmPassword":
+        return value === formData.password ? "" : "Passwords do not match.";
+      default:
+        return "";
+    }
+  };
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: validateField(name, value) }));
+  };
+
+  const validate = () => {
+    const newErrors = {};
+    Object.keys(formData).forEach((key) => {
+      const error = validateField(key, formData[key]);
+      if (error) newErrors[key] = error;
+    });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
+    if (validate()) {
+      console.log("Registration Data:", formData);
+      setIsRegistered(true);
+    }
   };
 
   return (
@@ -46,7 +87,6 @@ export default function RegisterPage() {
               TV
             </div>
           </div>
-          {/* Decorative blobs */}
           <div className="absolute -bottom-12 -right-12 w-40 h-40 bg-pink-400 rounded-full blur-3xl opacity-30 z-0"></div>
           <div className="absolute -top-10 -left-10 w-32 h-32 bg-purple-400 rounded-full blur-2xl opacity-30 z-0"></div>
         </div>
@@ -55,28 +95,52 @@ export default function RegisterPage() {
         <div className="p-8 md:p-10 bg-white/90 rounded-r-3xl">
           <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Create your TrustVault Account</h2>
           <form onSubmit={handleSubmit} className="space-y-5">
-            {[{ label: "Full Name", name: "fullName", type: "text" },
-              { label: "Email", name: "email", type: "email" },
-              { label: "Phone Number", name: "phone", type: "tel" },
-              { label: "Country", name: "country", type: "text" },
-            ].map(({ label, name, type }) => (
-              <div key={name} className="relative">
-                <input
-                  type={type}
-                  name={name}
-                  value={formData[name]}
-                  onChange={handleChange}
-                  className="peer w-full border border-gray-300 bg-white rounded-xl px-4 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-pink-500 placeholder-transparent"
-                  placeholder={label}
-                  required
-                />
-                <label className="absolute left-4 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-pink-500">
-                  {label}
-                </label>
-              </div>
-            ))}
+            {/* Name, Email, Phone */}
+            {["fullName", "email", "phone"].map((name) => {
+              const label = name === "fullName" ? "Full Name" : name === "email" ? "Email" : "Phone Number";
+              const type = name === "email" ? "email" : name === "phone" ? "tel" : "text";
+              return (
+                <div key={name} className="relative">
+                  <input
+                    type={type}
+                    name={name}
+                    value={formData[name]}
+                    onChange={handleChange}
+                    className={`peer w-full border ${errors[name] ? 'border-red-500' : 'border-gray-300'} bg-white rounded-xl px-4 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-pink-500 placeholder-transparent`}
+                    placeholder={label}
+                    required
+                  />
+                  <label className="absolute left-4 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-pink-500">
+                    {label}
+                  </label>
+                  {errors[name] && <p className="text-red-500 text-xs mt-1">{errors[name]}</p>}
+                </div>
+              );
+            })}
 
-            {/* Password Field with Toggle */}
+            {/* Country Dropdown */}
+            <div className="relative">
+              <input
+                list="country-list"
+                name="country"
+                value={formData.country}
+                onChange={handleChange}
+                placeholder="Country"
+                className={`peer w-full border ${errors.country ? 'border-red-500' : 'border-gray-300'} bg-white rounded-xl px-4 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-pink-500 placeholder-transparent`}
+                required
+              />
+              <label className="absolute left-4 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-pink-500">
+                Country
+              </label>
+              <datalist id="country-list">
+                {countries.map((country) => (
+                  <option key={country} value={country} />
+                ))}
+              </datalist>
+              {errors.country && <p className="text-red-500 text-xs mt-1">{errors.country}</p>}
+            </div>
+
+            {/* Passwords */}
             {[{
               label: "Password",
               name: "password",
@@ -96,7 +160,7 @@ export default function RegisterPage() {
                   name={name}
                   value={formData[name]}
                   onChange={handleChange}
-                  className="peer w-full border border-gray-300 bg-white rounded-xl px-4 pt-5 pb-2 pr-10 focus:outline-none focus:ring-2 focus:ring-pink-500 placeholder-transparent"
+                  className={`peer w-full border ${errors[name] ? 'border-red-500' : 'border-gray-300'} bg-white rounded-xl px-4 pt-5 pb-2 pr-10 focus:outline-none focus:ring-2 focus:ring-pink-500 placeholder-transparent`}
                   placeholder={label}
                   required
                 />
@@ -110,6 +174,7 @@ export default function RegisterPage() {
                 >
                   {icon}
                 </button>
+                {errors[name] && <p className="text-red-500 text-xs mt-1">{errors[name]}</p>}
               </div>
             ))}
 
@@ -118,6 +183,18 @@ export default function RegisterPage() {
               className="w-full py-3 mt-4 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-xl font-bold shadow-lg hover:opacity-90 transition"
             >
               Create Account
+            </button>
+
+            {isRegistered && (
+              <div className="mt-4 text-center text-green-600 text-sm">Already registered!</div>
+            )}
+
+            <button
+              type="button"
+              onClick={() => navigate("/login")}
+              className="w-full py-2 mt-2 text-blue-600 font-medium underline hover:text-blue-800"
+            >
+              Sign In Instead
             </button>
           </form>
         </div>

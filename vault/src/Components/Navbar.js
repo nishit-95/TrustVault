@@ -45,7 +45,7 @@ export default function Navbar() {
 
         <Link to="/register">
           <button className="px-4 py-2 text-sm font-medium rounded-lg border border-blue-600 text-blue-600 hover:bg-blue-100">
-            Sign In
+            Sign Up
           </button>
         </Link>
       </div>

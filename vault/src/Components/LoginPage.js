@@ -2,15 +2,18 @@ import { useEffect, useState } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { Eye, EyeOff } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     agree: false,
   });
-
   const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [isNotRegistered, setIsNotRegistered] = useState(false);
 
   useEffect(() => {
     AOS.init({ duration: 1000, once: false });
@@ -25,13 +28,27 @@ export default function LoginPage() {
     });
   };
 
+  const validate = () => {
+    const newErrors = {};
+
+    if (!formData.email) newErrors.email = "Email is required.";
+    if (!formData.password) newErrors.password = "Password is required.";
+    if (!formData.agree) newErrors.agree = "You must agree to the terms.";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.agree) {
-      alert("You must agree to the terms and conditions.");
-      return;
+    if (validate()) {
+      const isUserRegistered = false; // Change to true if user is registered
+      if (!isUserRegistered) {
+        setIsNotRegistered(true);
+        return;
+      }
+      console.log("Login Data:", formData);
     }
-    console.log("Login Data:", formData);
   };
 
   return (
@@ -61,11 +78,11 @@ export default function LoginPage() {
                 onChange={handleChange}
                 placeholder="Email"
                 className="peer w-full border border-gray-300 bg-white rounded-xl px-4 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-transparent"
-                required
               />
               <label className="absolute left-4 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-blue-500">
                 Email
               </label>
+              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
             </div>
 
             {/* Password */}
@@ -77,7 +94,6 @@ export default function LoginPage() {
                 onChange={handleChange}
                 placeholder="Password"
                 className="peer w-full border border-gray-300 bg-white rounded-xl px-4 pt-5 pb-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-transparent"
-                required
               />
               <label className="absolute left-4 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-blue-500">
                 Password
@@ -89,6 +105,7 @@ export default function LoginPage() {
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
+              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
             </div>
 
             {/* Terms and Conditions */}
@@ -102,6 +119,7 @@ export default function LoginPage() {
               />
               <label className="text-sm text-gray-600">I agree to the <span className="text-blue-600 underline cursor-pointer">terms and conditions</span>.</label>
             </div>
+            {errors.agree && <p className="text-red-500 text-xs mt-1">{errors.agree}</p>}
 
             <button
               type="submit"
@@ -109,6 +127,22 @@ export default function LoginPage() {
             >
               Log In
             </button>
+
+            {isNotRegistered && (
+              <div className="mt-4 text-center text-red-600 text-sm">
+                You have not registered yet.
+              </div>
+            )}
+
+            <div className="mt-4 text-center">
+              <button
+                type="button"
+                onClick={() => navigate("/register")}
+                className="text-blue-600 underline hover:text-blue-800"
+              >
+                Register Now
+              </button>
+            </div>
           </form>
         </div>
       </div>
