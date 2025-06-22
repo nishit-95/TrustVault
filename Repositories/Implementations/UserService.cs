@@ -81,7 +81,7 @@ namespace Repositories.Implementations
                                 c_user_id = reader.GetInt32(reader.GetOrdinal("c_user_id")),
                                 c_full_name = reader.GetString(reader.GetOrdinal("c_full_name")),
                                 c_email = reader.GetString(reader.GetOrdinal("c_email")),
-                                c_password_hash = reader.GetString(reader.GetOrdinal("c_password_hash")),
+                                c_password = reader.GetString(reader.GetOrdinal("c_password_hash")),
                                 c_phone = reader.IsDBNull(reader.GetOrdinal("c_phone")) ? null : reader.GetString(reader.GetOrdinal("c_phone")),
                                 c_country = reader.IsDBNull(reader.GetOrdinal("c_country")) ? null : reader.GetString(reader.GetOrdinal("c_country")),
                                 c_created_at = reader.GetDateTime(reader.GetOrdinal("c_created_at"))
@@ -127,7 +127,7 @@ namespace Repositories.Implementations
                                       "SELECT CAST(scope_identity() AS int);";
                     cmd.Parameters.AddWithValue("@FullName", user.c_full_name);
                     cmd.Parameters.AddWithValue("@Email", user.c_email);
-                    cmd.Parameters.AddWithValue("@PasswordHash", HashPass(user.c_password_hash));
+                    cmd.Parameters.AddWithValue("@PasswordHash", HashPass(user.c_password));
                     cmd.Parameters.AddWithValue("@Phone", (object)user.c_phone ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@Country", (object)user.c_country ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@CreatedAt", DateTime.UtcNow);
