@@ -14,6 +14,7 @@ namespace Repositories.Interfaces
         //  Login (Authentication)
         Task<t_users?> LoginAsync(string email, string password);
 
+
         //  Get Profile
         Task<t_users?> GetUserByIdAsync(int userId);
         Task<IEnumerable<t_users>> GetAllUsersAsync();
@@ -26,6 +27,7 @@ namespace Repositories.Interfaces
         Task<IEnumerable<t_documents>> GetUserDocumentsAsync(int userId);
         Task<t_documents> UploadDocumentAsync(t_documents document);
         Task<bool> DeleteDocumentAsync(int documentId);
+
 
         //  Consent
         Task<IEnumerable<t_consents>> GetUserConsentsAsync(int userId);

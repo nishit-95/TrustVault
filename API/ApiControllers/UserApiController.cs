@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using API.Helper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Repositories.Interfaces;
 using Repositories.Models;
@@ -25,7 +26,7 @@ namespace API.ApiControllers
 
         }
 
-         private int GetUserIdFromToken()
+        private int GetUserIdFromToken()
         {
             var userIdClaim = HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier);
             return userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
@@ -67,13 +68,57 @@ namespace API.ApiControllers
 
             try
             {
+                // Attempt login using your service
                 var result = await _userService.LoginAsync(user.c_email, user.c_password);
+
                 if (result != null)
                 {
-                    string token = JwtHelper.GenerateJwtToken(user, _configuration);
+                    // ✅ Generate JWT token
+                    string token = JwtHelper.GenerateJwtToken(result, _configuration);
+
+                    // ✅ Return both user info and token
+                    return Ok(new
+                    {
+                        message = "Login successful",
+                        token = token,
+                        user = new
+                        {
+                            result.c_user_id,
+                            result.c_full_name,
+                            result.c_email,
+                            result.c_phone,
+                            result.c_country
+                        }
+                    });
+                }
+
+                return Unauthorized("Invalid email or password.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+        [Authorize]
+        [HttpPost("GrantConsent")]
+        public async Task<IActionResult> GrantConsentAsync([FromBody] t_consents consent)
+        {
+            if (consent == null)
+            {
+                return BadRequest("Consent data is required.");
+            }
+
+            try
+            {
+                int userId = GetUserIdFromToken();
+                consent.c_user_id = userId;
+
+                var result = await _userService.GrantConsentAsync(consent);
+                if (result != null)
+                {
                     return Ok(result);
                 }
-                return Unauthorized("Invalid username or password.");
+                return BadRequest("Failed to grant consent.");
             }
             catch (Exception ex)
             {
@@ -81,7 +126,72 @@ namespace API.ApiControllers
             }
         }
 
+        [Authorize]
+        [HttpGet("GetUserById")]
+        public async Task<IActionResult> GetUserByIdAsync()
+        {
+            try
+            {
+                int userId = GetUserIdFromToken();
+                var user = await _userService.GetUserByIdAsync(userId);
+                if (user != null)
+                {
+                    return Ok(user);
+                }
+                return NotFound("User not found.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
 
+        [Authorize]
+        [HttpPut("UpdateUser")]
+        public async Task<IActionResult> UpdateUserAsync([FromBody] t_users user)
+        {
+            if (user == null)
+            {
+                return BadRequest("User data is required.");
+            }
+
+            try
+            {
+                int userId = GetUserIdFromToken();
+                user.c_user_id = userId;
+
+                var result = await _userService.UpdateUserAsync(user);
+                if (result)
+                {
+                    return Ok("User updated successfully.");
+                }
+                return BadRequest("Failed to update user.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [Authorize]
+        [HttpDelete("DeleteUser")]
+        public async Task<IActionResult> DeleteUserAsync()
+        {
+            try
+            {
+                int userId = GetUserIdFromToken();
+                var result = await _userService.DeleteUserAsync(userId);
+                if (result)
+                {
+                    return Ok("User deleted successfully.");
+                }
+                return BadRequest("Failed to delete user.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
 
     }
 }

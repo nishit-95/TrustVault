@@ -1,6 +1,7 @@
 // src/Components/Navbar.js
 import { useState, useEffect } from "react";
 import { Sun, Moon } from "lucide-react";
+import { Link } from 'react-router-dom';
 
 
 export default function Navbar() {
@@ -36,12 +37,17 @@ export default function Navbar() {
           )}
         </button>
 
-        <button className="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700">
-          Login
-        </button>
-        <button className="px-4 py-2 text-sm font-medium rounded-lg border border-blue-600 text-blue-600 hover:bg-blue-100">
-          Sign In
-        </button>
+        <Link to="/login">
+          <button className="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700">
+            Login
+          </button>
+        </Link>
+
+        <Link to="/register">
+          <button className="px-4 py-2 text-sm font-medium rounded-lg border border-blue-600 text-blue-600 hover:bg-blue-100">
+            Sign Up
+          </button>
+        </Link>
       </div>
     </nav>
   );

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 export default function HeroSection() {
   return (
     <section className="relative overflow-hidden py-24 px-6 text-center bg-white dark:bg-gray-950">
@@ -28,9 +29,11 @@ export default function HeroSection() {
         <p className="text-lg text-gray-700 dark:text-gray-300 mb-8">
           Secure, simple, and fast financial infrastructure for your digital business.
         </p>
-        <button className="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition duration-300 shadow-lg hover:shadow-xl">
-          Get Started
-        </button>
+        <Link to="/register">
+          <button className="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition duration-300 shadow-lg hover:shadow-xl">
+            Get Started
+          </button>
+        </Link>
       </div>
     </section>
   );
