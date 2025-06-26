@@ -53,14 +53,14 @@ export default function LoginPage() {
             c_password: formData.password,
           }),
         });
-
         if (response.ok) {
+          const data = await response.json();
+          if (data.token) {
+            localStorage.setItem("token", data.token);
+            console.log(data.token);
+          }
           toast.success("Login successful!", { position: "top-center" });
-
-          // ✅ Redirect to homepage after short delay
-          setTimeout(() => {
-            navigate("/");
-          }, 1000);
+          // You can redirect or set auth state here
         } else {
           const errorData = await response.json();
           setIsNotRegistered(true);
@@ -71,7 +71,9 @@ export default function LoginPage() {
         }
       } catch (error) {
         setIsNotRegistered(true);
-        toast.error("Network error. Please try again.", { position: "top-center" });
+        toast.error("Network error. Please try again.", {
+          position: "top-center",
+        });
       }
     }
   };
@@ -172,7 +174,11 @@ export default function LoginPage() {
                 Log In
               </button>
 
-              {/* Register Button */}
+              {isNotRegistered && (
+                <div className="mt-4 text-center text-red-600 text-sm">
+                </div>
+              )}
+
               <div className="mt-4 text-center">
                 <button
                   type="button"
