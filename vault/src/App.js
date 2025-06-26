@@ -11,10 +11,12 @@ import ClientsSection from "./Components/ClientsSection";
 import Footer from "./Components/Footer";
 import RegisterPage from "./Components/RegisterPage"; 
 import LoginPage from "./Components/LoginPage";
+import Layout from "./Components/Layout";
 import HomePage from "./Components/HomePage";
 import MyData from "./Components/MyData";
 import GrantConsent from "./Components/GrantConsent";
-
+import AccessLog from "./Components/AccessLog";
+import UpdateProfilePage from "./Components/UpdateProfilePage";
 
 function App() {
   useEffect(() => {
@@ -34,7 +36,6 @@ function App() {
       <AboutSection />
       <ClientsSection />
       <Footer />
-      <HomePage />
     </>
   );
 
@@ -45,9 +46,13 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/homepage" element={<HomePage />} /> 
-          <Route path="/mydata" element={<MyData />} />
-          <Route path="/grant-consent" element={<GrantConsent />} />
+          <Route element={<Layout />}>
+            <Route path="/homepage" element={<HomePage />} /> 
+            <Route path="/mydata" element={<MyData />} />
+            <Route path="/grant-consent" element={<GrantConsent />} />
+            <Route path="/access-log" element={<AccessLog />} />
+            <Route path="/update-profile" element={<UpdateProfilePage />} />
+          </Route>
         </Routes>
       </div>
     </Router>

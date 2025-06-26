@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { Eye, EyeOff } from "lucide-react";
@@ -149,26 +149,51 @@ export default function RegisterPage() {
                 );
               })}
 
-              {/* Country Dropdown */}
+              {/* Country Dropdown with larger size and arrow */}
               <div className="relative">
-                <input
-                  list="country-list"
+                <select
                   name="c_country"
                   value={formData.c_country}
                   onChange={handleChange}
-                  placeholder="Country"
-                  className={`peer w-full border ${errors.c_country ? 'border-red-500' : 'border-gray-300'} bg-white rounded-xl px-4 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-pink-500 placeholder-transparent`}
+                  className={`peer w-full border ${errors.c_country ? 'border-red-500' : 'border-gray-300'} 
+                    bg-white rounded-xl px-4 pt-6 pb-3 pr-12 text-lg 
+                    focus:outline-none focus:ring-2 focus:ring-pink-500 appearance-none`}
                   required
-                />
-                <label className="absolute left-4 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-pink-500">
+                >
+                  <option value="" disabled hidden></option>
+                  {countries.map((country) => (
+                    <option key={country} value={country}>
+                      {country}
+                    </option>
+                  ))}
+                </select>
+
+                {/* Floating Label */}
+                <label
+                  className={`
+                    absolute left-4 text-gray-500 transition-all
+                    peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400
+                    peer-focus:top-2 peer-focus:text-sm peer-focus:text-pink-500
+                    ${formData.c_country ? "top-2 text-sm text-pink-500" : "top-4 text-base"}
+                  `}
+                >
                   Country
                 </label>
-                <datalist id="country-list">
-                  {countries.map((country) => (
-                    <option key={country} value={country} />
-                  ))}
-                </datalist>
-                {errors.c_country && <p className="text-red-500 text-xs mt-1">{errors.c_country}</p>}
+
+                {/* Larger Arrow Icon */}
+                <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">
+                  <svg className="w-6 h-6" viewBox="0 0 20 20" fill="currentColor">
+                    <path
+                      fillRule="evenodd"
+                      d="M10 14a1 1 0 01-.7-.3l-4-4a1 1 0 011.4-1.4L10 11.6l3.3-3.3a1 1 0 011.4 1.4l-4 4a1 1 0 01-.7.3z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+
+                {errors.c_country && (
+                  <p className="text-red-500 text-xs mt-1">{errors.c_country}</p>
+                )}
               </div>
 
               {/* Passwords */}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { Eye, EyeOff } from "lucide-react";
@@ -32,11 +32,9 @@ export default function LoginPage() {
 
   const validate = () => {
     const newErrors = {};
-
     if (!formData.email) newErrors.email = "Email is required.";
     if (!formData.password) newErrors.password = "Password is required.";
     if (!formData.agree) newErrors.agree = "You must agree to the terms.";
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -55,9 +53,14 @@ export default function LoginPage() {
             c_password: formData.password,
           }),
         });
+
         if (response.ok) {
           toast.success("Login successful!", { position: "top-center" });
-          // You can redirect or set auth state here
+
+          // ✅ Redirect to homepage after short delay
+          setTimeout(() => {
+            navigate("/");
+          }, 1000);
         } else {
           const errorData = await response.json();
           setIsNotRegistered(true);
@@ -85,14 +88,13 @@ export default function LoginPage() {
           <div className="hidden md:flex flex-col justify-center items-center relative bg-gradient-to-br from-[#1f1c2c] to-[#928dab] p-10 text-white">
             <h2 className="text-3xl font-bold mb-2">Welcome Back!</h2>
             <p className="text-center max-w-xs">
-              Securely access your TrustVault account and take control of your
-              finances.
+              Securely access your TrustVault account and take control of your finances.
             </p>
             <div className="absolute -top-10 -left-10 w-32 h-32 bg-indigo-400 rounded-full blur-2xl opacity-30"></div>
             <div className="absolute bottom-0 right-0 w-40 h-40 bg-cyan-400 rounded-full blur-3xl opacity-30"></div>
           </div>
 
-          {/* Right Panel (Form) */}
+          {/* Right Panel */}
           <div className="p-8 md:p-10 bg-white/90">
             <h3 className="text-2xl font-bold text-center text-gray-800 mb-6">
               Login to TrustVault
@@ -141,7 +143,7 @@ export default function LoginPage() {
                 )}
               </div>
 
-              {/* Terms and Conditions */}
+              {/* Agree to terms */}
               <div className="flex items-center space-x-2">
                 <input
                   type="checkbox"
@@ -162,6 +164,7 @@ export default function LoginPage() {
                 <p className="text-red-500 text-xs mt-1">{errors.agree}</p>
               )}
 
+              {/* Submit */}
               <button
                 type="submit"
                 className="w-full py-3 mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold shadow-lg hover:opacity-90 transition"
@@ -169,11 +172,7 @@ export default function LoginPage() {
                 Log In
               </button>
 
-              {isNotRegistered && (
-                <div className="mt-4 text-center text-red-600 text-sm">
-                </div>
-              )}
-
+              {/* Register Button */}
               <div className="mt-4 text-center">
                 <button
                   type="button"
