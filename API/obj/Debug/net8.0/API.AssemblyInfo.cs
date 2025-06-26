@@ -13,15 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-<<<<<<< HEAD
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+87497b9801c7639969daaef82000dd2ebcd18d38")]
-=======
-<<<<<<< HEAD
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a766b93935a3377091118380b1a5f94c3b115927")]
-=======
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+14691797b566554de5e51a5aa9c2dffd0c9fafcc")]
->>>>>>> nishit
->>>>>>> ac7a24ad42843278c9a42c1cc2c23f061e2ddb59
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+742d211c0fec60edd1a47d93f23ca374309668e8")]
 [assembly: System.Reflection.AssemblyProductAttribute("API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

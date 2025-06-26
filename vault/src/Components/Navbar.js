@@ -38,7 +38,13 @@ export default function Navbar() {
         </button>
 
         <Link to="/login">
-          <button className="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700">
+          <button
+            className="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+            onClick={() => {
+              localStorage.removeItem("token");
+              window.location.href = "/login";
+            }}
+          >
             Login
           </button>
         </Link>

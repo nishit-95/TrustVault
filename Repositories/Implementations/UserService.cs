@@ -111,7 +111,31 @@ namespace Repositories.Implementations
 
         public Task<bool> DeleteDocumentAsync(int documentId)
         {
-            throw new NotImplementedException();
+            if (_conn.State != System.Data.ConnectionState.Open)
+            {
+                _conn.Open();
+            }
+            try
+            {
+                using (var cmd = _conn.CreateCommand())
+                {
+                    cmd.CommandText = "DELETE FROM t_documents WHERE c_document_id = @DocumentId";
+                    cmd.Parameters.AddWithValue("@DocumentId", documentId);
+                    return Task.FromResult(cmd.ExecuteNonQuery() > 0);
+                }
+            }
+            catch (System.Exception)
+            {
+                Console.WriteLine("An error occurred while deleting the document.");
+                return Task.FromResult(false);
+            }
+            finally
+            {
+                if (_conn.State == System.Data.ConnectionState.Open)
+                {
+                    _conn.Close();
+                }
+            }
         }
 
         public Task<bool> DeleteUserAsync(int userId)

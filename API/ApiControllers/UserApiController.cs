@@ -281,7 +281,46 @@ namespace API.ApiControllers
             }
         }
 
+        [Authorize]
+        [HttpDelete("DeleteDocument/{documentId}")]
+        public async Task<IActionResult> DeleteDocumentAsync(int documentId)
+        {
+            try
+            {
+                var userId = GetUserIdFromToken();
+                var documents = await _userService.GetUserDocumentsAsync(userId);
+                var doc = documents?.FirstOrDefault(d => d.c_document_id == documentId);
+                if (doc == null)
+                {
+                    return NotFound("Document not found.");
+                }
+
+                // Delete file from Document folder if exists
+                if (!string.IsNullOrEmpty(doc.c_file_url))
+                {
+                    var rootPath = Directory.GetCurrentDirectory();
+                    var filePath = Path.Combine(rootPath, doc.c_file_url.Replace("/", Path.DirectorySeparatorChar.ToString()));
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                }
+
+                var result = await _userService.DeleteDocumentAsync(documentId);
+                if (result)
+                {
+                    return Ok("Document deleted successfully.");
+                }
+                return BadRequest("Failed to delete document.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
         
+
 
     }
 }

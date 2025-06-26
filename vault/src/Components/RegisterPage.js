@@ -66,6 +66,7 @@ export default function RegisterPage() {
   };
 
   const handleSubmit = async (e) => {
+    debugger;
     e.preventDefault();
     if (validate()) {
       try {

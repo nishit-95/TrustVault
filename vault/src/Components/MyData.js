@@ -4,6 +4,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 
 export default function MyData() {
   const [selectedDoc, setSelectedDoc] = useState("");
@@ -45,7 +46,7 @@ export default function MyData() {
 
   const handleUpload = async () => {
     if (!selectedDoc || !file) {
-      alert("Please select both document type and file.");
+      Swal.fire("Error", "Please select both document type and file.", "error");
       return;
     }
 
@@ -78,19 +79,55 @@ export default function MyData() {
 
       if (!response.ok) {
         const errText = await response.text();
+        Swal.fire("Error", errText, "error");
         throw new Error(errText);
       }
 
       fetchDocuments();
       setFile(null);
       setSelectedDoc("");
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      Swal.fire("Success", "File uploaded successfully.", "success");
     } catch (error) {
       console.error("Error uploading document:", error);
+      Swal.fire("Error", "Error uploading document.", "error");
     }
   };
 
-  const handleDelete = (id) => {
-    setDocuments(documents.filter((doc) => doc.c_document_id !== id));
+  const handleDelete = async (id) => {
+    const token = localStorage.getItem("token");
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "This document will be deleted permanently.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    });
+    if (!confirm.isConfirmed) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:5002/api/UserApi/DeleteDocument/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.ok) {
+        setDocuments(documents.filter((doc) => doc.c_document_id !== id));
+        Swal.fire("Deleted!", "Document deleted successfully.", "success");
+      } else {
+        Swal.fire("Error", "Failed to delete document.", "error");
+      }
+    } catch (error) {
+      Swal.fire("Error", "Error deleting document.", "error");
+    }
   };
 
   const renderFilePreview = (url) => {
@@ -136,6 +173,7 @@ export default function MyData() {
             <label className="block mb-2 font-medium">Select File</label>
             <input
               type="file"
+              ref={fileInputRef}
               onChange={handleFileChange}
               className="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600"
             />
@@ -185,27 +223,15 @@ export default function MyData() {
                     </td>
                     <td className="p-4 space-x-4">
                       {doc.c_file_url && (
-                        <>
-                          <button
-                            className="text-blue-600 hover:underline"
-                            onClick={() =>
-                              setPreviewUrl(
-                                `http://localhost:5002/${doc.c_file_url}`
-                              )
-                            }
-                          >
-                            View
-                          </button>
-                          <a
-                            href={`http://localhost:5002/${doc.c_file_url}`}
-                            className="text-green-600 hover:underline"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            download={doc.c_document_name}
-                          >
-                            Download
-                          </a>
-                        </>
+                        <a
+                          href={`http://localhost:5002/${doc.c_file_url}`}
+                          className="text-green-600 hover:underline"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          download={doc.c_document_name}
+                        >
+                          Download
+                        </a>
                       )}
                       <button
                         className="text-red-600 hover:underline"

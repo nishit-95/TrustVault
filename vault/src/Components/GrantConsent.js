@@ -10,9 +10,14 @@ export default function GrantConsent() {
   const [purpose, setPurpose] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
+  const [partners, setPartners] = useState([]);
 
   useEffect(() => {
     AOS.init({ duration: 1000 });
+    fetch("http://localhost:5002/api/PartnerApi/GetAllPartners")
+      .then((res) => res.json())
+      .then((data) => setPartners(data))
+      .catch(() => setPartners([]));
   }, []);
 
   const handleSubmit = () => {
@@ -58,10 +63,11 @@ export default function GrantConsent() {
                 onChange={(e) => setCompany(e.target.value)}
               >
                 <option value="">-- Choose Company --</option>
-                <option value="Google">Google</option>
-                <option value="Amazon">Amazon</option>
-                <option value="Flipkart">Flipkart</option>
-                <option value="TCS">TCS</option>
+                {partners.map((p) => (
+                  <option key={p.c_partner_id} value={p.c_partner_name}>
+                    {p.c_partner_name}
+                  </option>
+                ))}
               </select>
             </div>
 
