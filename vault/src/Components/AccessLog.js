@@ -44,7 +44,7 @@ export default function AccessLog() {
       >
         <h2 className="text-2xl font-bold mb-6 text-primary">Access Logs</h2>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-hidden">
           <table className="min-w-full table-auto border-collapse">
             <thead>
               <tr className="bg-gray-200 dark:bg-gray-800 text-left">
