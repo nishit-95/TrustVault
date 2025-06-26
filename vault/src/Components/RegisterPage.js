@@ -1,3 +1,6 @@
+// ✅ MODIFIED VERSION of RegisterPage.jsx
+// Ensures ONLY phone input is filtered live and not copied into other fields like password
+
 import React, { useEffect, useState } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -41,7 +44,9 @@ export default function RegisterPage() {
       case "c_country":
         return countries.includes(value) ? "" : "Please select a valid country.";
       case "c_password":
-        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,15}$/.test(value) ? "" : "Password must be 8-15 characters with upper, lower, digit, and special character.";
+        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,15}$/.test(value)
+          ? ""
+          : "Password must be 8-15 characters with upper, lower, digit, and special character.";
       case "confirmPassword":
         return value === formData.c_password ? "" : "Passwords do not match.";
       default:
@@ -51,8 +56,22 @@ export default function RegisterPage() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
     setErrors((prevErrors) => ({ ...prevErrors, [name]: validateField(name, value) }));
+  };
+
+  const handlePhoneInput = (e) => {
+    const keyAllowed = /^[0-9]$/.test(e.key) || ["Backspace", "ArrowLeft", "ArrowRight", "Tab", "Delete"].includes(e.key);
+    if (!keyAllowed) {
+      e.preventDefault();
+    }
+  };
+
+  const handlePhonePaste = (e) => {
+    const pasted = e.clipboardData.getData("text");
+    if (!/^\d+$/.test(pasted)) {
+      e.preventDefault();
+    }
   };
 
   const validate = () => {
@@ -70,32 +89,23 @@ export default function RegisterPage() {
     e.preventDefault();
     if (validate()) {
       try {
-        // Only send backend fields
-        const payload = {
-          c_full_name: formData.c_full_name,
-          c_email: formData.c_email,
-          c_password: formData.c_password,
-          c_phone: formData.c_phone,
-          c_country: formData.c_country,
-        };
+        const payload = { ...formData };
+        delete payload.confirmPassword;
         const response = await fetch("http://localhost:5002/api/UserApi/Register", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
+
         if (response.ok) {
           setIsRegistered(true);
           toast.success("Registration successful! Redirecting to login...", { position: "top-center" });
           setTimeout(() => navigate("/login"), 5000);
         } else {
           const errorData = await response.json();
-          setErrors({ api: errorData.message || "Registration failed." });
           toast.error(errorData.message || "Registration failed.", { position: "top-center" });
         }
-      } catch (error) {
-        setErrors({ api: "Network error. Please try again." });
+      } catch {
         toast.error("Network error. Please try again.", { position: "top-center" });
       }
     }
@@ -109,95 +119,95 @@ export default function RegisterPage() {
           data-aos="zoom-in"
           className="grid grid-cols-1 md:grid-cols-2 max-w-5xl w-full bg-white/20 backdrop-blur-2xl rounded-3xl shadow-[0_0_40px_rgba(0,0,0,0.2)] overflow-hidden"
         >
-          {/* Left Panel */}
           <div className="hidden md:flex flex-col justify-center items-center relative p-10 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] opacity-90 z-0"></div>
-            <div className="relative z-10 text-white space-y-6 text-center">
-              <h1 className="text-4xl font-extrabold tracking-wide">TrustVault</h1>
+            <div className="relative z-10 text-white text-center space-y-6">
+              <h1 className="text-4xl font-extrabold">TrustVault</h1>
               <p className="text-lg max-w-sm mx-auto">Experience the future of secure financial services with luxury style and high-grade security.</p>
-              <div className="w-24 h-24 rounded-full border-4 border-white flex items-center justify-center text-xl font-bold bg-gradient-to-br from-white to-gray-300 text-black mx-auto">
-                TV
-              </div>
+              <div className="w-24 h-24 rounded-full border-4 border-white flex items-center justify-center text-xl font-bold bg-gradient-to-br from-white to-gray-300 text-black mx-auto">TV</div>
             </div>
-            <div className="absolute -bottom-12 -right-12 w-40 h-40 bg-pink-400 rounded-full blur-3xl opacity-30 z-0"></div>
-            <div className="absolute -top-10 -left-10 w-32 h-32 bg-purple-400 rounded-full blur-2xl opacity-30 z-0"></div>
           </div>
 
-          {/* Right Panel */}
           <div className="p-8 md:p-10 bg-white/90 rounded-r-3xl">
             <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Create your TrustVault Account</h2>
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Name, Email, Phone */}
-              {["c_full_name", "c_email", "c_phone"].map((name) => {
-                const label = name === "c_full_name" ? "Full Name" : name === "c_email" ? "Email" : "Phone Number";
-                const type = name === "c_email" ? "email" : name === "c_phone" ? "tel" : "text";
-                return (
-                  <div key={name} className="relative">
-                    <input
-                      type={type}
-                      name={name}
-                      value={formData[name]}
-                      onChange={handleChange}
-                      className={`peer w-full border ${errors[name] ? 'border-red-500' : 'border-gray-300'} bg-white rounded-xl px-4 pt-5 pb-2 focus:outline-none focus:ring-2 focus:ring-pink-500 placeholder-transparent`}
-                      placeholder={label}
-                      required
-                    />
-                    <label className="absolute left-4 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-pink-500">
-                      {label}
-                    </label>
-                    {errors[name] && <p className="text-red-500 text-xs mt-1">{errors[name]}</p>}
-                  </div>
-                );
-              })}
+              {/* Full Name */}
+              <div className="relative">
+                <input
+                  type="text"
+                  name="c_full_name"
+                  value={formData.c_full_name}
+                  onChange={handleChange}
+                  className={`peer w-full border ${errors.c_full_name ? 'border-red-500' : 'border-gray-300'} bg-white rounded-xl px-4 pt-6 pb-2 focus:outline-none focus:ring-2 focus:ring-pink-500 placeholder-transparent`}
+                  placeholder="Full Name"
+                  required
+                />
+                <label className="absolute left-4 top-1 text-gray-500 text-sm transition-all peer-focus:top-1 peer-focus:text-sm peer-focus:text-pink-500">Full Name</label>
+                {errors.c_full_name && <p className="text-red-500 text-xs mt-1">{errors.c_full_name}</p>}
+              </div>
 
-              {/* Country Dropdown with larger size and arrow */}
+              {/* Email */}
+              <div className="relative">
+                <input
+                  type="email"
+                  name="c_email"
+                  value={formData.c_email}
+                  onChange={handleChange}
+                  className={`peer w-full border ${errors.c_email ? 'border-red-500' : 'border-gray-300'} bg-white rounded-xl px-4 pt-6 pb-2 focus:outline-none focus:ring-2 focus:ring-pink-500 placeholder-transparent`}
+                  placeholder="Email"
+                  required
+                />
+                <label className="absolute left-4 top-1 text-gray-500 text-sm transition-all peer-focus:top-1 peer-focus:text-sm peer-focus:text-pink-500">Email</label>
+                {errors.c_email && <p className="text-red-500 text-xs mt-1">{errors.c_email}</p>}
+              </div>
+
+              {/* Phone */}
+              <div className="relative">
+                <input
+                  type="text"
+                  name="c_phone"
+                  inputMode="numeric"
+                  value={formData.c_phone}
+                  maxLength={10}
+                  onKeyDown={handlePhoneInput}
+                  onPaste={handlePhonePaste}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, "");
+                    setFormData({ ...formData, c_phone: value });
+                    setErrors((prev) => ({ ...prev, c_phone: validateField("c_phone", value) }));
+                  }}
+                  className={`peer w-full border ${errors.c_phone ? 'border-red-500' : 'border-gray-300'} bg-white rounded-xl px-4 pt-6 pb-2 focus:outline-none focus:ring-2 focus:ring-pink-500 placeholder-transparent`}
+                  placeholder="Phone Number"
+                  required
+                />
+                <label className="absolute left-4 top-1 text-gray-500 text-sm transition-all peer-focus:top-1 peer-focus:text-sm peer-focus:text-pink-500">Phone Number</label>
+                {errors.c_phone && <p className="text-red-500 text-xs mt-1">{errors.c_phone}</p>}
+              </div>
+
+              {/* Country */}
               <div className="relative">
                 <select
                   name="c_country"
                   value={formData.c_country}
                   onChange={handleChange}
-                  className={`peer w-full border ${errors.c_country ? 'border-red-500' : 'border-gray-300'} 
-                    bg-white rounded-xl px-4 pt-6 pb-3 pr-12 text-lg 
-                    focus:outline-none focus:ring-2 focus:ring-pink-500 appearance-none`}
+                  className={`peer w-full border ${errors.c_country ? 'border-red-500' : 'border-gray-300'} bg-white rounded-xl px-4 pt-6 pb-3 pr-12 text-lg focus:outline-none focus:ring-2 focus:ring-pink-500 appearance-none`}
                   required
                 >
                   <option value="" disabled hidden></option>
                   {countries.map((country) => (
-                    <option key={country} value={country}>
-                      {country}
-                    </option>
+                    <option key={country} value={country}>{country}</option>
                   ))}
                 </select>
-
-                {/* Floating Label */}
-                <label
-                  className={`
-                    absolute left-4 text-gray-500 transition-all
-                    peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400
-                    peer-focus:top-2 peer-focus:text-sm peer-focus:text-pink-500
-                    ${formData.c_country ? "top-2 text-sm text-pink-500" : "top-4 text-base"}
-                  `}
-                >
-                  Country
-                </label>
-
-                {/* Larger Arrow Icon */}
+                <label className="absolute left-4 top-1 text-sm text-gray-500 transition-all peer-focus:text-pink-500">Country</label>
                 <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">
                   <svg className="w-6 h-6" viewBox="0 0 20 20" fill="currentColor">
-                    <path
-                      fillRule="evenodd"
-                      d="M10 14a1 1 0 01-.7-.3l-4-4a1 1 0 011.4-1.4L10 11.6l3.3-3.3a1 1 0 011.4 1.4l-4 4a1 1 0 01-.7.3z"
-                      clipRule="evenodd"
-                    />
+                    <path fillRule="evenodd" d="M10 14a1 1 0 01-.7-.3l-4-4a1 1 0 011.4-1.4L10 11.6l3.3-3.3a1 1 0 011.4 1.4l-4 4a1 1 0 01-.7.3z" clipRule="evenodd" />
                   </svg>
                 </div>
-
-                {errors.c_country && (
-                  <p className="text-red-500 text-xs mt-1">{errors.c_country}</p>
-                )}
+                {errors.c_country && <p className="text-red-500 text-xs mt-1">{errors.c_country}</p>}
               </div>
 
-              {/* Passwords */}
+              {/* Password and Confirm Password */}
               {[{
                 label: "Password",
                 name: "c_password",
@@ -217,18 +227,12 @@ export default function RegisterPage() {
                     name={name}
                     value={formData[name]}
                     onChange={handleChange}
-                    className={`peer w-full border ${errors[name] ? 'border-red-500' : 'border-gray-300'} bg-white rounded-xl px-4 pt-5 pb-2 pr-10 focus:outline-none focus:ring-2 focus:ring-pink-500 placeholder-transparent`}
+                    className={`peer w-full border ${errors[name] ? 'border-red-500' : 'border-gray-300'} bg-white rounded-xl px-4 pt-6 pb-2 pr-10 focus:outline-none focus:ring-2 focus:ring-pink-500 placeholder-transparent`}
                     placeholder={label}
                     required
                   />
-                  <label className="absolute left-4 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-pink-500">
-                    {label}
-                  </label>
-                  <button
-                    type="button"
-                    onClick={toggle}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                  >
+                  <label className="absolute left-4 top-1 text-gray-500 text-sm transition-all peer-focus:top-1 peer-focus:text-sm peer-focus:text-pink-500">{label}</label>
+                  <button type="button" onClick={toggle} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700">
                     {icon}
                   </button>
                   {errors[name] && <p className="text-red-500 text-xs mt-1">{errors[name]}</p>}
@@ -241,10 +245,6 @@ export default function RegisterPage() {
               >
                 Create Account
               </button>
-
-              {isRegistered && (
-                <div className="mt-4 text-center text-green-600 text-sm"></div>
-              )}
 
               <button
                 type="button"

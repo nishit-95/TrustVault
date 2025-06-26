@@ -1,3 +1,5 @@
+// UpdateProfilePage.js
+
 import React, { useState, useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -22,7 +24,11 @@ export default function UpdateProfilePage() {
     const { name, value } = e.target;
 
     if (name === "fullName" && value.length > 20) return;
-    if (name === "phone" && value.length > 10) return;
+    if (name === "phone") {
+      const digitsOnly = value.replace(/\D/g, "");
+      setFormData((prev) => ({ ...prev, [name]: digitsOnly }));
+      return;
+    }
 
     setFormData((prev) => ({
       ...prev,
@@ -33,11 +39,11 @@ export default function UpdateProfilePage() {
   const validate = () => {
     const newErrors = {};
     if (!formData.fullName.trim()) newErrors.fullName = "Name is required";
-    if (!/^[A-Za-z\s]+$/.test(formData.fullName)) newErrors.fullName = "Only letters allowed";
-    if (formData.fullName.length > 20) newErrors.fullName = "Max 20 characters";
+    else if (!/^[A-Za-z\s]+$/.test(formData.fullName)) newErrors.fullName = "Only letters allowed";
+    else if (formData.fullName.length > 20) newErrors.fullName = "Max 20 characters";
 
     if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
-    if (!/^\d{10}$/.test(formData.phone)) newErrors.phone = "Must be 10 digits";
+    else if (!/^\d{10}$/.test(formData.phone)) newErrors.phone = "Must be 10 digits";
 
     if (!formData.country) newErrors.country = "Please select a country";
 
@@ -55,7 +61,7 @@ export default function UpdateProfilePage() {
   const handleDeleteAccount = () => {
     const confirmDelete = window.confirm("Are you sure you want to delete your account?");
     if (confirmDelete) {
-      alert("Account Deleted"); // later integrate backend here
+      alert("Account Deleted");
     }
   };
 
@@ -99,7 +105,23 @@ export default function UpdateProfilePage() {
           <input
             type="text"
             name="phone"
+            inputMode="numeric"
             value={formData.phone}
+            maxLength={10}
+            onKeyDown={(e) => {
+              const isAllowedKey =
+                /^[0-9]$/.test(e.key) ||
+                ["Backspace", "ArrowLeft", "ArrowRight", "Tab", "Delete"].includes(e.key);
+              if (!isAllowedKey) {
+                e.preventDefault();
+              }
+            }}
+            onPaste={(e) => {
+              const pasted = e.clipboardData.getData("text");
+              if (!/^\d+$/.test(pasted)) {
+                e.preventDefault();
+              }
+            }}
             onChange={handleChange}
             placeholder="10-digit number"
             className="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600"
@@ -128,10 +150,10 @@ export default function UpdateProfilePage() {
 
         {/* Submit Button */}
         <button
-            onClick={handleSubmit}
-            className="w-full bg-green-600 text-white py-3 rounded-md shadow-md hover:bg-green-700 transition-all duration-200 mb-4"
-            >
-            Submit
+          onClick={handleSubmit}
+          className="w-full bg-green-600 text-white py-3 rounded-md shadow-md hover:bg-green-700 transition-all duration-200 mb-4"
+        >
+          Submit
         </button>
 
         {/* Delete Account */}
