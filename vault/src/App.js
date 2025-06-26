@@ -11,6 +11,10 @@ import ClientsSection from "./Components/ClientsSection";
 import Footer from "./Components/Footer";
 import RegisterPage from "./Components/RegisterPage"; 
 import LoginPage from "./Components/LoginPage";
+import HomePage from "./Components/HomePage";
+import MyData from "./Components/MyData";
+import GrantConsent from "./Components/GrantConsent";
+
 
 function App() {
   useEffect(() => {
@@ -30,6 +34,7 @@ function App() {
       <AboutSection />
       <ClientsSection />
       <Footer />
+      <HomePage />
     </>
   );
 
@@ -40,6 +45,9 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/homepage" element={<HomePage />} /> 
+          <Route path="/mydata" element={<MyData />} />
+          <Route path="/grant-consent" element={<GrantConsent />} />
         </Routes>
       </div>
     </Router>
