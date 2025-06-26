@@ -1,6 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+// MyData.js
+import React, { useState, useRef, useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function MyData() {
   const [selectedDoc, setSelectedDoc] = useState("");
@@ -81,11 +84,8 @@ export default function MyData() {
       fetchDocuments();
       setFile(null);
       setSelectedDoc("");
-      fileInputRef.current.value = "";
-      alert("File uploaded successfully.");
-    } catch (err) {
-      console.error("Upload failed:", err);
-      alert("Upload failed. Please try again.");
+    } catch (error) {
+      console.error("Error uploading document:", error);
     }
   };
 
@@ -95,7 +95,9 @@ export default function MyData() {
 
   const renderFilePreview = (url) => {
     if (url.match(/\.(jpeg|jpg|png|gif)$/i)) {
-      return <img src={url} alt="Preview" className="w-full h-full object-contain" />;
+      return (
+        <img src={url} alt="Preview" className="w-full h-full object-contain" />
+      );
     } else {
       return <iframe src={url} title="Preview" className="w-full h-full" />;
     }
@@ -103,12 +105,19 @@ export default function MyData() {
 
   return (
     <div className="min-h-screen px-6 py-8 bg-gradient-to-br from-purple-100 via-blue-50 to-pink-100 dark:from-gray-900 dark:via-gray-800 dark:to-black text-foreground dark:text-white transition-colors duration-300">
-      <div className="bg-white dark:bg-gray-900 shadow-lg rounded-2xl p-6 mb-10" data-aos="fade-up">
-        <h2 className="text-2xl font-bold mb-6 text-primary">Upload Document</h2>
+      <div
+        className="bg-white dark:bg-gray-900 shadow-lg rounded-2xl p-6 mb-10"
+        data-aos="fade-up"
+      >
+        <h2 className="text-2xl font-bold mb-6 text-primary">
+          Upload Document
+        </h2>
 
         <div className="grid md:grid-cols-3 sm:grid-cols-1 gap-6 items-end">
           <div>
-            <label className="block mb-2 font-medium">Select Document Type</label>
+            <label className="block mb-2 font-medium">
+              Select Document Type
+            </label>
             <select
               className="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600"
               value={selectedDoc}
@@ -127,24 +136,30 @@ export default function MyData() {
             <label className="block mb-2 font-medium">Select File</label>
             <input
               type="file"
-              ref={fileInputRef}
               onChange={handleFileChange}
               className="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600"
             />
           </div>
 
-          <button
-            onClick={handleUpload}
-            className="bg-primary text-white px-6 py-3 rounded-md shadow-md hover:scale-105 transition-transform"
-            data-aos="zoom-in"
-          >
-            Submit
-          </button>
+          <div className="flex items-end">
+            <button
+              onClick={handleUpload}
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md shadow-md transition-transform hover:scale-105 w-full"
+              data-aos="zoom-in"
+            >
+              Submit
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-900 shadow-lg rounded-2xl p-6" data-aos="fade-up">
-        <h2 className="text-2xl font-bold mb-6 text-primary">Uploaded Documents</h2>
+      <div
+        className="bg-white dark:bg-gray-900 shadow-lg rounded-2xl p-6"
+        data-aos="fade-up"
+      >
+        <h2 className="text-2xl font-bold mb-6 text-primary">
+          Uploaded Documents
+        </h2>
         <div className="overflow-x-auto">
           <table className="min-w-full table-auto border-collapse">
             <thead>
@@ -158,14 +173,15 @@ export default function MyData() {
             <tbody>
               {documents.length > 0 ? (
                 documents.map((doc, index) => (
-                  <tr key={doc.c_document_id} className="border-b border-gray-300 dark:border-gray-700">
+                  <tr
+                    key={doc.c_document_id}
+                    className="border-b border-gray-300 dark:border-gray-700"
+                  >
                     <td className="p-4">{index + 1}</td>
                     <td className="p-4">{doc.c_document_name}</td>
                     <td className="p-4">
-                      {
-                        docTypes.find((dt) => dt.c_data_id === doc.c_data_id)?.c_data_name ||
-                        doc.c_data_id
-                      }
+                      {docTypes.find((dt) => dt.c_data_id === doc.c_data_id)
+                        ?.c_data_name || doc.c_data_id}
                     </td>
                     <td className="p-4 space-x-4">
                       {doc.c_file_url && (
@@ -173,7 +189,9 @@ export default function MyData() {
                           <button
                             className="text-blue-600 hover:underline"
                             onClick={() =>
-                              setPreviewUrl(`http://localhost:5002/${doc.c_file_url}`)
+                              setPreviewUrl(
+                                `http://localhost:5002/${doc.c_file_url}`
+                              )
                             }
                           >
                             View
@@ -183,7 +201,7 @@ export default function MyData() {
                             className="text-green-600 hover:underline"
                             target="_blank"
                             rel="noopener noreferrer"
-                            download
+                            download={doc.c_document_name}
                           >
                             Download
                           </a>
@@ -226,4 +244,4 @@ export default function MyData() {
       )}
     </div>
   );
-}
+};

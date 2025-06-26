@@ -12,16 +12,16 @@ export default function Footer() {
             Secure your digital finance with the trust you deserve.
           </p>
           <div className="flex space-x-4">
-            <a href="#" className="hover:text-blue-600 transition">
+            <a href="/" className="hover:text-blue-600 transition">
               <FaFacebookF />
             </a>
-            <a href="#" className="hover:text-blue-600 transition">
+            <a href="/" className="hover:text-blue-600 transition">
               <FaTwitter />
             </a>
-            <a href="#" className="hover:text-blue-600 transition">
+            <a href="/" className="hover:text-blue-600 transition">
               <FaLinkedinIn />
             </a>
-            <a href="#" className="hover:text-blue-600 transition">
+            <a href="/" className="hover:text-blue-600 transition">
               <FaGithub />
             </a>
           </div>
@@ -31,10 +31,10 @@ export default function Footer() {
         <div>
           <h3 className="text-lg font-semibold mb-3">Quick Links</h3>
           <ul className="space-y-2 text-sm">
-            <li><a href="#" className="hover:text-blue-600 transition">Privacy Policy</a></li>
-            <li><a href="#" className="hover:text-blue-600 transition">Terms of Service</a></li>
-            <li><a href="#" className="hover:text-blue-600 transition">Documentation</a></li>
-            <li><a href="#" className="hover:text-blue-600 transition">Support</a></li>
+            <li><a href="/" className="hover:text-blue-600 transition">Privacy Policy</a></li>
+            <li><a href="/" className="hover:text-blue-600 transition">Terms of Service</a></li>
+            <li><a href="/" className="hover:text-blue-600 transition">Documentation</a></li>
+            <li><a href="/" className="hover:text-blue-600 transition">Support</a></li>
           </ul>
         </div>
 
