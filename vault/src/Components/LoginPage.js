@@ -45,19 +45,28 @@ export default function LoginPage() {
     e.preventDefault();
     if (validate()) {
       try {
-        const response = await fetch("http://localhost:5002/api/UserApi/Login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            c_email: formData.email,
-            c_password: formData.password,
-          }),
-        });
+        const response = await fetch(
+          "http://localhost:5002/api/UserApi/Login",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              c_email: formData.email,
+              c_password: formData.password,
+            }),
+          }
+        );
         if (response.ok) {
+          const data = await response.json();
+          if (data.token) {
+            localStorage.setItem("token", data.token);
+            console.log(data.token);
+          }
           toast.success("Login successful!", { position: "top-center" });
-          // You can redirect or set auth state here
+          setTimeout(() => navigate("/homepage"), 5000); // Redirect after 5 seconds
+          // Or use navigate("/homepage") immediately if you don't want a delay
         } else {
           const errorData = await response.json();
           setIsNotRegistered(true);
@@ -68,7 +77,9 @@ export default function LoginPage() {
         }
       } catch (error) {
         setIsNotRegistered(true);
-        toast.error("Network error. Please try again.", { position: "top-center" });
+        toast.error("Network error. Please try again.", {
+          position: "top-center",
+        });
       }
     }
   };
@@ -170,8 +181,7 @@ export default function LoginPage() {
               </button>
 
               {isNotRegistered && (
-                <div className="mt-4 text-center text-red-600 text-sm">
-                </div>
+                <div className="mt-4 text-center text-red-600 text-sm"></div>
               )}
 
               <div className="mt-4 text-center">
