@@ -25,7 +25,8 @@ export default function Layout() {
 
   const confirmLogout = () => {
     setShowLogoutModal(false);
-    navigate("/login");
+    localStorage.removeItem("token");
+    navigate("/");
   };
 
   const cancelLogout = () => {

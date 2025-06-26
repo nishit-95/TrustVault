@@ -60,7 +60,7 @@ export default function LoginPage() {
             console.log(data.token);
           }
           toast.success("Login successful!", { position: "top-center" });
-          // You can redirect or set auth state here
+          setTimeout(() => navigate("/homepage"), 4000);
         } else {
           const errorData = await response.json();
           setIsNotRegistered(true);

@@ -28,7 +28,7 @@ namespace Repositories.Implementations
             {
                 using (var cmd = _conn.CreateCommand())
                 {
-                    cmd.CommandText = "INSERT INTO t_users (c_full_name, c_email, c_password_hash, c_phone, c_country, c_created_at) " +
+                    cmd.CommandText = "INSERT INTO t_users (c_full_name, c_email, c_password, c_phone, c_country, c_created_at) " +
                                       "VALUES (@FullName, @Email, @PasswordHash, @Phone, @Country, @CreatedAt); " +
                                       "SELECT CAST(scope_identity() AS int);";
                     cmd.Parameters.AddWithValue("@FullName", user.c_full_name);
@@ -69,7 +69,7 @@ namespace Repositories.Implementations
             {
                 using (var cmd = _conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT * FROM t_users WHERE c_email = @Email AND c_password_hash = @PasswordHash";
+                    cmd.CommandText = "SELECT * FROM t_users WHERE c_email = @Email AND c_password = @PasswordHash";
                     cmd.Parameters.AddWithValue("@Email", email);
                     cmd.Parameters.AddWithValue("@PasswordHash", HashPass(password)); // In a real application, use a secure hash
 
@@ -82,7 +82,7 @@ namespace Repositories.Implementations
                                 c_user_id = reader.GetInt32(reader.GetOrdinal("c_user_id")),
                                 c_full_name = reader.GetString(reader.GetOrdinal("c_full_name")),
                                 c_email = reader.GetString(reader.GetOrdinal("c_email")),
-                                c_password = reader.GetString(reader.GetOrdinal("c_password_hash")),
+                                c_password = reader.GetString(reader.GetOrdinal("c_password")),
                                 c_phone = reader.IsDBNull(reader.GetOrdinal("c_phone")) ? null : reader.GetString(reader.GetOrdinal("c_phone")),
                                 c_country = reader.IsDBNull(reader.GetOrdinal("c_country")) ? null : reader.GetString(reader.GetOrdinal("c_country")),
                                 c_created_at = reader.GetDateTime(reader.GetOrdinal("c_created_at"))
@@ -228,6 +228,7 @@ namespace Repositories.Implementations
             throw new NotImplementedException();
         }
 
+        // ...existing code...
         public Task<IEnumerable<t_documents>> GetUserDocumentsAsync(int userId)
         {
             if (_conn.State != System.Data.ConnectionState.Open)
@@ -238,7 +239,11 @@ namespace Repositories.Implementations
             {
                 using (var cmd = _conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT * FROM t_documents WHERE c_user_id = @UserId";
+                    cmd.CommandText = @"
+                SELECT d.*, dt.c_data_name
+                FROM t_documents d
+                LEFT JOIN t_data_types dt ON d.c_data_id = dt.c_data_id
+                WHERE d.c_user_id = @UserId";
                     cmd.Parameters.AddWithValue("@UserId", userId);
 
                     using (var reader = cmd.ExecuteReader())
@@ -246,7 +251,7 @@ namespace Repositories.Implementations
                         var documents = new List<t_documents>();
                         while (reader.Read())
                         {
-                            documents.Add(new t_documents
+                            var doc = new t_documents
                             {
                                 c_document_id = reader.GetInt32(reader.GetOrdinal("c_document_id")),
                                 c_user_id = reader.GetInt32(reader.GetOrdinal("c_user_id")),
@@ -256,7 +261,12 @@ namespace Repositories.Implementations
                                 c_mime_type = reader.IsDBNull(reader.GetOrdinal("c_mime_type")) ? null : reader.GetString(reader.GetOrdinal("c_mime_type")),
                                 c_is_active = reader.GetBoolean(reader.GetOrdinal("c_is_active")),
                                 c_uploaded_at = reader.GetDateTime(reader.GetOrdinal("c_uploaded_at"))
-                            });
+                            };
+
+                            // If your t_documents model does not have c_data_name, you can extend it or use a DTO/view model.
+                            // Example: doc.c_data_name = reader.IsDBNull(reader.GetOrdinal("c_data_name")) ? null : reader.GetString(reader.GetOrdinal("c_data_name"));
+
+                            documents.Add(doc);
                         }
                         return Task.FromResult<IEnumerable<t_documents>>(documents);
                     }
@@ -356,6 +366,8 @@ namespace Repositories.Implementations
             }
         }
 
+
+
         public Task<t_documents> UploadDocumentAsync(t_documents document)
         {
             if (_conn.State != System.Data.ConnectionState.Open)
@@ -452,6 +464,6 @@ namespace Repositories.Implementations
             }
         }
 
-        
+
     }
 }

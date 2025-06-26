@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 
 export default function GrantConsent() {
   const [company, setCompany] = useState("");
@@ -11,19 +10,55 @@ export default function GrantConsent() {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [partners, setPartners] = useState([]);
+  const [dataTypes, setDataTypes] = useState([]);
+  const [userDataTypeIds, setUserDataTypeIds] = useState([]); // Store user's data type ids
 
   useEffect(() => {
     AOS.init({ duration: 1000 });
-    fetch("http://localhost:5002/api/PartnerApi/GetAllPartners")
+    const token = localStorage.getItem('token');
+
+    fetch("http://localhost:5002/api/PartnerApi/GetAllPartners", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((res) => res.json())
       .then((data) => setPartners(data))
       .catch(() => setPartners([]));
+
+    // Fetch all data types
+    fetch("http://localhost:5002/api/UserApi/GetDataTypesAsync", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => setDataTypes(data))
+      .catch(() => setDataTypes([]));
+
+    // Fetch user documents and extract data type ids
+    fetch("http://localhost:5002/api/UserApi/GetUserDocuments", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((docs) => {
+        const ids = docs.map((doc) => doc.c_data_id);
+        setUserDataTypeIds(ids);
+      })
+      .catch(() => setUserDataTypeIds([]));
   }, []);
 
   const handleSubmit = () => {
     if (!company || !dataType || !purpose || !startTime || !endTime) {
-      toast.error("Please fill all the fields before submitting!", {
-        position: "top-center",
+      Swal.fire({
+        icon: "error",
+        title: "Missing Fields",
+        text: "Please fill all the fields before submitting!",
+        timer: 2000,
+        showConfirmButton: false,
+        position: "center",
       });
       return;
     }
@@ -37,12 +72,29 @@ export default function GrantConsent() {
     };
 
     console.log("Consent Given:", consentInfo);
-    toast.success("Consent submitted successfully!", { position: "top-center" });
+    Swal.fire({
+      icon: "success",
+      title: "Consent submitted successfully!",
+      position: "center",
+      confirmButtonText: "OK",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: true,
+      timer: undefined,
+    }).then(() => {
+      // Reset form fields after user clicks OK
+      setCompany("");
+      setDataType("");
+      setPurpose("");
+      setStartTime("");
+      setEndTime("");
+    });
+
+    // Add API logic here if needed
   };
 
   return (
     <>
-      <ToastContainer />
       <div className="min-h-screen flex items-center justify-center px-6 py-10 bg-gradient-to-br from-purple-100 via-blue-50 to-pink-100 dark:from-gray-900 dark:via-gray-800 dark:to-black text-foreground dark:text-white transition-colors duration-300">
         <div
           className="w-full max-w-2xl bg-white dark:bg-gray-900 shadow-lg rounded-2xl p-8"
@@ -79,10 +131,13 @@ export default function GrantConsent() {
                 onChange={(e) => setDataType(e.target.value)}
               >
                 <option value="">-- Select Data Type --</option>
-                <option value="Aadhaar">Aadhaar</option>
-                <option value="PAN">PAN</option>
-                <option value="Bank Statement">Bank Statement</option>
-                <option value="Medical Record">Medical Record</option>
+                {dataTypes
+                  .filter((dt) => userDataTypeIds.includes(dt.c_data_id))
+                  .map((dt) => (
+                    <option key={dt.c_data_id} value={dt.c_data_name}>
+                      {dt.c_data_name}
+                    </option>
+                  ))}
               </select>
             </div>
 
@@ -100,42 +155,24 @@ export default function GrantConsent() {
 
             {/* Duration */}
             <div className="grid md:grid-cols-2 gap-6">
-              {/* Start Time */}
               <div>
                 <label className="block mb-2 font-medium">Start Time</label>
                 <input
                   type="datetime-local"
                   value={startTime}
-                  onChange={(e) => {
-                    setStartTime(e.target.value);
-                    if (endTime && e.target.value > endTime) setEndTime(""); // reset end if invalid
-                  }}
+                  onChange={(e) => setStartTime(e.target.value)}
                   className="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600"
                 />
               </div>
 
-              {/* End Time */}
-              <div className="relative group">
+              <div>
                 <label className="block mb-2 font-medium">End Time</label>
                 <input
                   type="datetime-local"
                   value={endTime}
-                  min={startTime}
                   onChange={(e) => setEndTime(e.target.value)}
-                  disabled={!startTime}
-                  className={`w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-800 border ${
-                    !startTime
-                      ? "opacity-50 cursor-not-allowed"
-                      : "border-gray-300 dark:border-gray-600"
-                  }`}
+                  className="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600"
                 />
-
-                {/* Custom Tooltip */}
-                {!startTime && (
-                  <div className="absolute top-full left-0 mt-1 px-2 py-1 text-sm bg-black text-white rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-100 z-10">
-                    Select start time first
-                  </div>
-                )}
               </div>
             </div>
 
