@@ -206,7 +206,50 @@ namespace Repositories.Implementations
 
         public Task<IEnumerable<t_documents>> GetUserDocumentsAsync(int userId)
         {
-            throw new NotImplementedException();
+            if (_conn.State != System.Data.ConnectionState.Open)
+            {
+                _conn.Open();
+            }
+            try
+            {
+                using (var cmd = _conn.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT * FROM t_documents WHERE c_user_id = @UserId";
+                    cmd.Parameters.AddWithValue("@UserId", userId);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        var documents = new List<t_documents>();
+                        while (reader.Read())
+                        {
+                            documents.Add(new t_documents
+                            {
+                                c_document_id = reader.GetInt32(reader.GetOrdinal("c_document_id")),
+                                c_user_id = reader.GetInt32(reader.GetOrdinal("c_user_id")),
+                                c_data_id = reader.IsDBNull(reader.GetOrdinal("c_data_id")) ? null : reader.GetInt32(reader.GetOrdinal("c_data_id")),
+                                c_document_name = reader.GetString(reader.GetOrdinal("c_document_name")),
+                                c_file_url = reader.IsDBNull(reader.GetOrdinal("c_file_url")) ? null : reader.GetString(reader.GetOrdinal("c_file_url")),
+                                c_mime_type = reader.IsDBNull(reader.GetOrdinal("c_mime_type")) ? null : reader.GetString(reader.GetOrdinal("c_mime_type")),
+                                c_is_active = reader.GetBoolean(reader.GetOrdinal("c_is_active")),
+                                c_uploaded_at = reader.GetDateTime(reader.GetOrdinal("c_uploaded_at"))
+                            });
+                        }
+                        return Task.FromResult<IEnumerable<t_documents>>(documents);
+                    }
+                }
+            }
+            catch (System.Exception)
+            {
+                Console.WriteLine("An error occurred while retrieving user documents.");
+                return Task.FromResult<IEnumerable<t_documents>>(null);
+            }
+            finally
+            {
+                if (_conn.State == System.Data.ConnectionState.Open)
+                {
+                    _conn.Close();
+                }
+            }
         }
 
         public async Task<t_consents> GrantConsentAsync(t_consents consent)
@@ -385,46 +428,6 @@ namespace Repositories.Implementations
             }
         }
 
-        public async Task<t_data_types> GetDataByDataIdAsync(int dataId)
-        {
-            if (_conn.State != System.Data.ConnectionState.Open)
-            {
-                _conn.Open();
-            }
-            try
-            {
-                using (var cmd = _conn.CreateCommand())
-                {
-                    cmd.CommandText = "SELECT * FROM t_data_types WHERE c_data_id = @DataId";
-                    cmd.Parameters.AddWithValue("@DataId", dataId);
-
-                    using (var reader = await cmd.ExecuteReaderAsync())
-                    {
-                        if (await reader.ReadAsync())
-                        {
-                            return new t_data_types
-                            {
-                                c_data_id = reader.GetInt32(reader.GetOrdinal("c_data_id")),
-                                c_data_name = reader.GetString(reader.GetOrdinal("c_data_name")),
-                                c_sensitivity_level = reader.GetString(reader.GetOrdinal("c_sensitivity_level"))
-                            };
-                        }
-                    }
-                }
-                return null; // or throw an exception based on your error handling strategy
-            }
-            catch (System.Exception)
-            {
-                Console.WriteLine("An error occurred while retrieving the data type.");
-                return null;
-            }
-            finally
-            {
-                if (_conn.State == System.Data.ConnectionState.Open)
-                {
-                    _conn.Close();
-                }
-            }
-        }
+        
     }
 }

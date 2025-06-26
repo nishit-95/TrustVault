@@ -262,23 +262,26 @@ namespace API.ApiControllers
         }
 
         [Authorize]
-        [HttpGet("GetDataByDataIdAsync")]
-        public async Task<IActionResult> GetDataByDataIdAsync(int dataId)
+        [HttpGet("GetUserDocuments")]
+        public async Task<IActionResult> GetUserDocumentsAsync()
         {
             try
             {
-                var data = await _userService.GetDataByDataIdAsync(dataId);
-                if (data != null)
+                int userId = GetUserIdFromToken();
+                var documents = await _userService.GetUserDocumentsAsync(userId);
+                if (documents != null && documents.Any())
                 {
-                    return Ok(data);
+                    return Ok(documents);
                 }
-                return NotFound("Data not found.");
+                return NotFound("No documents found for this user.");
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        
 
     }
 }
