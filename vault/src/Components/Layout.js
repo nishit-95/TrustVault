@@ -68,7 +68,7 @@ export default function Layout() {
             <li className="relative group list-none">
               <div className="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-gray-800">
                 <button
-                  className="text-2xl text-gray-800 dark:text-white transition-transform duration-[1200ms] ease-in-out transform group-hover:rotate-[360deg]"
+                  className="text-2xl text-gray-800 dark:text-white transition-transform duration-[1200ms] ease-in-out transform group-hover:rotate-[120deg]"
                   aria-label="Settings"
                 >
                   ⛮
