@@ -28,6 +28,8 @@ namespace Repositories.Interfaces
         Task<t_documents> UploadDocumentAsync(t_documents document);
         Task<bool> DeleteDocumentAsync(int documentId);
 
+        Task<IEnumerable<t_data_types>> GetDataTypesAsync();
+
 
         //  Consent
         Task<IEnumerable<t_consents>> GetUserConsentsAsync(int userId);
@@ -37,6 +39,11 @@ namespace Repositories.Interfaces
         //  Anomaly Alerts
         Task<IEnumerable<t_anomaly_alerts>> GetUserAlertsAsync(int userId);
         Task<bool> MarkAlertResolvedAsync(int alertId);
+
+
+
+
+        Task<t_data_types> GetDataByDataIdAsync(int dataId);
     }
 
 }

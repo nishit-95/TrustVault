@@ -193,5 +193,92 @@ namespace API.ApiControllers
             }
         }
 
+        [Authorize]
+        [HttpGet("GetDataTypesAsync")]
+        public async Task<IActionResult> GetDataTypesAsync()
+        {
+            try
+            {
+                var dataTypes = await _userService.GetDataTypesAsync();
+                if (dataTypes != null && dataTypes.Any())
+                {
+                    return Ok(dataTypes);
+                }
+                return NotFound("No data types found.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [Authorize]
+        [HttpPost("UploadDocument")]
+        public async Task<IActionResult> UploadDocumentAsync([FromForm] t_documents document)
+        {
+            if (document == null || document.c_file == null)
+            {
+                return BadRequest("Document data and file are required.");
+            }
+
+            try
+            {
+                int userId = GetUserIdFromToken();
+                document.c_user_id = userId;
+
+                // Create Document folder if it doesn't exist
+                var rootPath = Directory.GetCurrentDirectory();
+                var docFolder = Path.Combine(rootPath, "Document");
+                if (!Directory.Exists(docFolder))
+                {
+                    Directory.CreateDirectory(docFolder);
+                }
+
+                // Save file to Document folder
+                var fileName = $"{Guid.NewGuid()}_{document.c_file.FileName}";
+                var filePath = Path.Combine(docFolder, fileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await document.c_file.CopyToAsync(stream);
+                }
+
+                // Set file url (relative path)
+                document.c_file_url = Path.Combine("Document", fileName).Replace("\\", "/");
+                document.c_mime_type = document.c_file.ContentType;
+                document.c_uploaded_at = DateTime.UtcNow;
+                document.c_is_active = true;
+
+                var result = await _userService.UploadDocumentAsync(document);
+                if (result != null)
+                {
+                    return Ok(result);
+                }
+                return BadRequest("Failed to upload document.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [Authorize]
+        [HttpGet("GetDataByDataIdAsync")]
+        public async Task<IActionResult> GetDataByDataIdAsync(int dataId)
+        {
+            try
+            {
+                var data = await _userService.GetDataByDataIdAsync(dataId);
+                if (data != null)
+                {
+                    return Ok(data);
+                }
+                return NotFound("Data not found.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
     }
 }
