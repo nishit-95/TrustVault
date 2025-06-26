@@ -47,65 +47,65 @@ export default function Layout() {
 
         <div className="flex items-center gap-4">
           <ul className="flex gap-6 text-lg">
-                    {navLinks
-            .filter((link) => link.name !== "Update Profile") // remove "Update Profile"
-            .map((link, index) => (
-              <li key={index} data-aos="fade-up" data-aos-delay={index * 100}>
-                <Link
-                  to={link.path}
-                  className="hover:text-primary transition-colors duration-150"
-                >
-                  {link.name}
-                </Link>
-              </li>
-            ))}
-
-          {/* Settings Dropdown */}
-          <li className="relative group" data-aos="fade-up" data-aos-delay={navLinks.length * 100}>
-            <button className="hover:text-primary flex items-center gap-1 transition-colors duration-150">
-              Settings
-              <svg
-                className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-
-            <ul className="absolute right-0 mt-2 w-44 bg-white dark:bg-gray-900 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all duration-200 z-50">
-              <li>
-                <Link
-                  to="/update-profile"
-                  className="block w-full text-left px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  Update Profile
-                </Link>
-              </li>
-              <li>
-                <button
-                  onClick={handleLogoutClick}
-                  className="block w-full text-left px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  Log Out
-                </button>
-              </li>
-            </ul>
-          </li>
-
+            {navLinks
+              .filter((link) => link.name !== "Update Profile")
+              .map((link, index) => (
+                <li key={index} data-aos="fade-up" data-aos-delay={index * 100}>
+                  <Link
+                    to={link.path}
+                    className="hover:text-primary transition-colors duration-150"
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
           </ul>
 
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
-            aria-label="Toggle Theme"
-          >
-            {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-          </button>
+          {/* Gear + Theme Toggle Capsule */}
+          <div className="flex items-center gap-2 px-2 py-1 rounded-full bg-gray-200 dark:bg-gray-700">
+            {/* Gear Icon Dropdown */}
+            <li className="relative group list-none">
+              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-gray-800">
+                <button
+                  className="text-2xl text-gray-800 dark:text-white transition-transform duration-[1200ms] ease-in-out transform group-hover:rotate-[360deg]"
+                  aria-label="Settings"
+                >
+                  ⛮
+                </button>
+              </div>
+
+              {/* Dropdown */}
+              <ul className="absolute right-0 mt-2 w-44 bg-white dark:bg-gray-900 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all duration-200 z-50">
+                <li>
+                  <Link
+                    to="/update-profile"
+                    className="block w-full text-left px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    Update Profile
+                  </Link>
+                </li>
+                <li>
+                  <button
+                    onClick={handleLogoutClick}
+                    className="block w-full text-left px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    Log Out
+                  </button>
+                </li>
+              </ul>
+            </li>
+
+            {/* Theme Toggle */}
+            <div className="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-gray-800">
+              <button
+                onClick={toggleTheme}
+                className="text-gray-800 dark:text-white"
+                aria-label="Toggle Theme"
+              >
+                {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+              </button>
+            </div>
+          </div>
         </div>
       </nav>
 
