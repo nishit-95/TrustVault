@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using Repositories.Interfaces;
 using Repositories.Models;
 
@@ -9,6 +10,12 @@ namespace Repositories.Implementations
 {
     public class CompanyService : ICompanyService
     {
+         private readonly SqlConnection _conn;
+        public CompanyService(SqlConnection conn)
+        {
+            _conn = conn;
+        }
+
         public Task<bool> DeletePartnerAsync(int partnerId)
         {
             throw new NotImplementedException();
@@ -21,7 +28,37 @@ namespace Repositories.Implementations
 
         public Task<IEnumerable<t_partners>> GetAllPartnersAsync()
         {
-            throw new NotImplementedException();
+            if (_conn.State != System.Data.ConnectionState.Open)
+            {
+                _conn.Open();
+            }
+            try
+            {
+                using (var cmd = new SqlCommand("SELECT * FROM t_partners WHERE c_is_verified = 1", _conn))
+                {
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        var partners = new List<t_partners>();
+                        while (reader.Read())
+                        {
+                            var partner = new t_partners
+                            {
+                                c_partner_id = reader.GetInt32(0),
+                                c_partner_name = reader.GetString(1),
+                                c_is_verified = reader.GetBoolean(2),
+                                c_created_at = reader.GetDateTime(3)
+                            };
+                            partners.Add(partner);
+                        }
+                        return Task.FromResult<IEnumerable<t_partners>>(partners);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions as needed
+                throw;
+            }
         }
 
         public Task<t_partners?> GetPartnerByIdAsync(int partnerId)

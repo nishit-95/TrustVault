@@ -43,7 +43,6 @@ namespace Repositories.Interfaces
 
 
 
-        Task<t_data_types> GetDataByDataIdAsync(int dataId);
     }
-
 }
+

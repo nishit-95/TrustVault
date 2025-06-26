@@ -1,12 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+// MyData.js
+import React, { useState, useRef, useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 
 export default function MyData() {
   const [selectedDoc, setSelectedDoc] = useState("");
   const [file, setFile] = useState(null);
   const [documents, setDocuments] = useState([]);
   const [docTypes, setDocTypes] = useState([]);
+  const [previewUrl, setPreviewUrl] = useState("");
   const fileInputRef = useRef();
 
   useEffect(() => {
@@ -20,7 +25,20 @@ export default function MyData() {
       .then((res) => res.json())
       .then((data) => setDocTypes(data))
       .catch(() => setDocTypes([]));
+    fetchDocuments();
   }, []);
+
+  const fetchDocuments = () => {
+    const token = localStorage.getItem("token");
+    fetch("http://localhost:5002/api/UserApi/GetUserDocuments", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => setDocuments(data))
+      .catch(() => setDocuments([]));
+  };
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -28,7 +46,7 @@ export default function MyData() {
 
   const handleUpload = async () => {
     if (!selectedDoc || !file) {
-      alert("Please select both document type and file.");
+      Swal.fire("Error", "Please select both document type and file.", "error");
       return;
     }
 
@@ -37,12 +55,12 @@ export default function MyData() {
     const c_data_id = selectedType ? selectedType.c_data_id : 1;
 
     const formData = new FormData();
-    formData.append("c_document_id", 0); // auto-incremented on backend
-    formData.append("c_user_id", 0); // backend will override with token
+    formData.append("c_document_id", 0);
+    formData.append("c_user_id", 0);
     formData.append("c_data_id", c_data_id);
     formData.append("c_document_name", file.name);
-    formData.append("c_file_url", ""); // workaround: send empty string to satisfy backend
-    formData.append("c_mime_type", ""); // backend sets this too
+    formData.append("c_file_url", "");
+    formData.append("c_mime_type", "");
     formData.append("c_is_active", true);
     formData.append("c_uploaded_at", new Date().toISOString());
     formData.append("c_file", file);
@@ -61,30 +79,65 @@ export default function MyData() {
 
       if (!response.ok) {
         const errText = await response.text();
+        Swal.fire("Error", errText, "error");
         throw new Error(errText);
       }
 
-      const result = await response.json();
-
-      const newEntry = {
-        id: documents.length + 1,
-        name: result.c_document_name || file.name,
-        type: selectedDoc,
-      };
-
-      setDocuments([...documents, newEntry]);
+      fetchDocuments();
       setFile(null);
       setSelectedDoc("");
-      fileInputRef.current.value = "";
-      alert("File uploaded successfully.");
-    } catch (err) {
-      console.error("Upload failed:", err);
-      alert("Upload failed. Please try again.");
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      Swal.fire("Success", "File uploaded successfully.", "success");
+    } catch (error) {
+      console.error("Error uploading document:", error);
+      Swal.fire("Error", "Error uploading document.", "error");
     }
   };
 
-  const handleDelete = (id) => {
-    setDocuments(documents.filter((doc) => doc.id !== id));
+  const handleDelete = async (id) => {
+    const token = localStorage.getItem("token");
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "This document will be deleted permanently.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    });
+    if (!confirm.isConfirmed) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:5002/api/UserApi/DeleteDocument/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.ok) {
+        setDocuments(documents.filter((doc) => doc.c_document_id !== id));
+        Swal.fire("Deleted!", "Document deleted successfully.", "success");
+      } else {
+        Swal.fire("Error", "Failed to delete document.", "error");
+      }
+    } catch (error) {
+      Swal.fire("Error", "Error deleting document.", "error");
+    }
+  };
+
+  const renderFilePreview = (url) => {
+    if (url.match(/\.(jpeg|jpg|png|gif)$/i)) {
+      return (
+        <img src={url} alt="Preview" className="w-full h-full object-contain" />
+      );
+    } else {
+      return <iframe src={url} title="Preview" className="w-full h-full" />;
+    }
   };
 
   return (
@@ -126,13 +179,15 @@ export default function MyData() {
             />
           </div>
 
-          <button
-            onClick={handleUpload}
-            className="bg-primary text-white px-6 py-3 rounded-md shadow-md hover:scale-105 transition-transform"
-            data-aos="zoom-in"
-          >
-            Submit
-          </button>
+          <div className="flex items-end">
+            <button
+              onClick={handleUpload}
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md shadow-md transition-transform hover:scale-105 w-full"
+              data-aos="zoom-in"
+            >
+              Submit
+            </button>
+          </div>
         </div>
       </div>
 
@@ -157,19 +212,30 @@ export default function MyData() {
               {documents.length > 0 ? (
                 documents.map((doc, index) => (
                   <tr
-                    key={doc.id}
+                    key={doc.c_document_id}
                     className="border-b border-gray-300 dark:border-gray-700"
                   >
                     <td className="p-4">{index + 1}</td>
-                    <td className="p-4">{doc.name}</td>
-                    <td className="p-4">{doc.type}</td>
+                    <td className="p-4">{doc.c_document_name}</td>
+                    <td className="p-4">
+                      {docTypes.find((dt) => dt.c_data_id === doc.c_data_id)
+                        ?.c_data_name || doc.c_data_id}
+                    </td>
                     <td className="p-4 space-x-4">
-                      <button className="text-green-600 hover:underline">
-                        View
-                      </button>
+                      {doc.c_file_url && (
+                        <a
+                          href={`http://localhost:5002/${doc.c_file_url}`}
+                          className="text-green-600 hover:underline"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          download={doc.c_document_name}
+                        >
+                          Download
+                        </a>
+                      )}
                       <button
                         className="text-red-600 hover:underline"
-                        onClick={() => handleDelete(doc.id)}
+                        onClick={() => handleDelete(doc.c_document_id)}
                       >
                         Delete
                       </button>
@@ -187,6 +253,21 @@ export default function MyData() {
           </table>
         </div>
       </div>
+
+      {/* Modal for File Preview */}
+      {previewUrl && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg w-[90%] h-[90%] relative p-4 overflow-auto">
+            <button
+              onClick={() => setPreviewUrl("")}
+              className="absolute top-3 right-4 text-red-600 font-bold text-lg"
+            >
+              ✕
+            </button>
+            {renderFilePreview(previewUrl)}
+          </div>
+        </div>
+      )}
     </div>
   );
-}
+};

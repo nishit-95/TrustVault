@@ -28,7 +28,7 @@ namespace Repositories.Implementations
             {
                 using (var cmd = _conn.CreateCommand())
                 {
-                    cmd.CommandText = "INSERT INTO t_users (c_full_name, c_email, c_password_hash, c_phone, c_country, c_created_at) " +
+                    cmd.CommandText = "INSERT INTO t_users (c_full_name, c_email, c_password, c_phone, c_country, c_created_at) " +
                                       "VALUES (@FullName, @Email, @PasswordHash, @Phone, @Country, @CreatedAt); " +
                                       "SELECT CAST(scope_identity() AS int);";
                     cmd.Parameters.AddWithValue("@FullName", user.c_full_name);
@@ -69,7 +69,7 @@ namespace Repositories.Implementations
             {
                 using (var cmd = _conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT * FROM t_users WHERE c_email = @Email AND c_password_hash = @PasswordHash";
+                    cmd.CommandText = "SELECT * FROM t_users WHERE c_email = @Email AND c_password = @PasswordHash";
                     cmd.Parameters.AddWithValue("@Email", email);
                     cmd.Parameters.AddWithValue("@PasswordHash", HashPass(password)); // In a real application, use a secure hash
 
@@ -82,7 +82,7 @@ namespace Repositories.Implementations
                                 c_user_id = reader.GetInt32(reader.GetOrdinal("c_user_id")),
                                 c_full_name = reader.GetString(reader.GetOrdinal("c_full_name")),
                                 c_email = reader.GetString(reader.GetOrdinal("c_email")),
-                                c_password = reader.GetString(reader.GetOrdinal("c_password_hash")),
+                                c_password = reader.GetString(reader.GetOrdinal("c_password")),
                                 c_phone = reader.IsDBNull(reader.GetOrdinal("c_phone")) ? null : reader.GetString(reader.GetOrdinal("c_phone")),
                                 c_country = reader.IsDBNull(reader.GetOrdinal("c_country")) ? null : reader.GetString(reader.GetOrdinal("c_country")),
                                 c_created_at = reader.GetDateTime(reader.GetOrdinal("c_created_at"))
@@ -111,7 +111,31 @@ namespace Repositories.Implementations
 
         public Task<bool> DeleteDocumentAsync(int documentId)
         {
-            throw new NotImplementedException();
+            if (_conn.State != System.Data.ConnectionState.Open)
+            {
+                _conn.Open();
+            }
+            try
+            {
+                using (var cmd = _conn.CreateCommand())
+                {
+                    cmd.CommandText = "DELETE FROM t_documents WHERE c_document_id = @DocumentId";
+                    cmd.Parameters.AddWithValue("@DocumentId", documentId);
+                    return Task.FromResult(cmd.ExecuteNonQuery() > 0);
+                }
+            }
+            catch (System.Exception)
+            {
+                Console.WriteLine("An error occurred while deleting the document.");
+                return Task.FromResult(false);
+            }
+            finally
+            {
+                if (_conn.State == System.Data.ConnectionState.Open)
+                {
+                    _conn.Close();
+                }
+            }
         }
 
         public Task<bool> DeleteUserAsync(int userId)
@@ -204,9 +228,62 @@ namespace Repositories.Implementations
             throw new NotImplementedException();
         }
 
+        // ...existing code...
         public Task<IEnumerable<t_documents>> GetUserDocumentsAsync(int userId)
         {
-            throw new NotImplementedException();
+            if (_conn.State != System.Data.ConnectionState.Open)
+            {
+                _conn.Open();
+            }
+            try
+            {
+                using (var cmd = _conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                SELECT d.*, dt.c_data_name
+                FROM t_documents d
+                LEFT JOIN t_data_types dt ON d.c_data_id = dt.c_data_id
+                WHERE d.c_user_id = @UserId";
+                    cmd.Parameters.AddWithValue("@UserId", userId);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        var documents = new List<t_documents>();
+                        while (reader.Read())
+                        {
+                            var doc = new t_documents
+                            {
+                                c_document_id = reader.GetInt32(reader.GetOrdinal("c_document_id")),
+                                c_user_id = reader.GetInt32(reader.GetOrdinal("c_user_id")),
+                                c_data_id = reader.IsDBNull(reader.GetOrdinal("c_data_id")) ? null : reader.GetInt32(reader.GetOrdinal("c_data_id")),
+                                c_document_name = reader.GetString(reader.GetOrdinal("c_document_name")),
+                                c_file_url = reader.IsDBNull(reader.GetOrdinal("c_file_url")) ? null : reader.GetString(reader.GetOrdinal("c_file_url")),
+                                c_mime_type = reader.IsDBNull(reader.GetOrdinal("c_mime_type")) ? null : reader.GetString(reader.GetOrdinal("c_mime_type")),
+                                c_is_active = reader.GetBoolean(reader.GetOrdinal("c_is_active")),
+                                c_uploaded_at = reader.GetDateTime(reader.GetOrdinal("c_uploaded_at"))
+                            };
+
+                            // If your t_documents model does not have c_data_name, you can extend it or use a DTO/view model.
+                            // Example: doc.c_data_name = reader.IsDBNull(reader.GetOrdinal("c_data_name")) ? null : reader.GetString(reader.GetOrdinal("c_data_name"));
+
+                            documents.Add(doc);
+                        }
+                        return Task.FromResult<IEnumerable<t_documents>>(documents);
+                    }
+                }
+            }
+            catch (System.Exception)
+            {
+                Console.WriteLine("An error occurred while retrieving user documents.");
+                return Task.FromResult<IEnumerable<t_documents>>(null);
+            }
+            finally
+            {
+                if (_conn.State == System.Data.ConnectionState.Open)
+                {
+                    _conn.Close();
+                }
+            }
         }
 
         public async Task<t_consents> GrantConsentAsync(t_consents consent)
@@ -288,6 +365,8 @@ namespace Repositories.Implementations
                 }
             }
         }
+
+
 
         public Task<t_documents> UploadDocumentAsync(t_documents document)
         {
@@ -385,46 +464,6 @@ namespace Repositories.Implementations
             }
         }
 
-        public async Task<t_data_types> GetDataByDataIdAsync(int dataId)
-        {
-            if (_conn.State != System.Data.ConnectionState.Open)
-            {
-                _conn.Open();
-            }
-            try
-            {
-                using (var cmd = _conn.CreateCommand())
-                {
-                    cmd.CommandText = "SELECT * FROM t_data_types WHERE c_data_id = @DataId";
-                    cmd.Parameters.AddWithValue("@DataId", dataId);
 
-                    using (var reader = await cmd.ExecuteReaderAsync())
-                    {
-                        if (await reader.ReadAsync())
-                        {
-                            return new t_data_types
-                            {
-                                c_data_id = reader.GetInt32(reader.GetOrdinal("c_data_id")),
-                                c_data_name = reader.GetString(reader.GetOrdinal("c_data_name")),
-                                c_sensitivity_level = reader.GetString(reader.GetOrdinal("c_sensitivity_level"))
-                            };
-                        }
-                    }
-                }
-                return null; // or throw an exception based on your error handling strategy
-            }
-            catch (System.Exception)
-            {
-                Console.WriteLine("An error occurred while retrieving the data type.");
-                return null;
-            }
-            finally
-            {
-                if (_conn.State == System.Data.ConnectionState.Open)
-                {
-                    _conn.Close();
-                }
-            }
-        }
     }
 }
