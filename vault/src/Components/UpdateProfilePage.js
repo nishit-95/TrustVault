@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import Swal from "sweetalert2";
 
 const countries = ["India", "United States", "Canada", "Germany", "Australia", "Japan", "France"];
 
@@ -15,9 +16,36 @@ export default function UpdateProfilePage() {
   });
 
   const [errors, setErrors] = useState({});
+  const [userObj, setUserObj] = useState(null); // Store full user object
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = "/login"; // Redirect if no token
+      return;
+    }
+
     AOS.init({ duration: 1200, once: false });
+
+    // Fetch user profile data
+    fetch("http://localhost:5002/api/UserApi/GetUserById", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((user) => {
+        setUserObj(user); // Save full user object
+        setFormData({
+          fullName: user.c_full_name || "",
+          email: user.c_email || "",
+          phone: user.c_phone || "",
+          country: user.c_country || "",
+        });
+      })
+      .catch(() => {
+        // Optionally handle error
+      });
   }, []);
 
   const handleChange = (e) => {
@@ -53,16 +81,113 @@ export default function UpdateProfilePage() {
 
   const handleSubmit = () => {
     if (validate()) {
-      console.log("Profile Updated:", formData);
-      alert("Profile Updated Successfully");
+      const token = localStorage.getItem('token');
+      if (!userObj) return; // Don't submit if userObj not loaded
+
+      fetch("http://localhost:5002/api/UserApi/UpdateUser", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          c_user_id: userObj.c_user_id,
+          c_full_name: formData.fullName,
+          c_email: formData.email,
+          c_password: userObj.c_password,
+          c_phone: formData.phone,
+          c_country: formData.country,
+          c_created_at: userObj.c_created_at,
+        }),
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Update failed");
+          return res.json();
+        })
+        .then((data) => {
+          console.log("Profile Updated:", data);
+          Swal.fire({
+            icon: "success",
+            title: "Profile Updated Successfully",
+            position: "center",
+            confirmButtonText: "OK",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: true,
+            timer: undefined,
+          });
+        })
+        .catch(() => {
+          Swal.fire({
+            icon: "error",
+            title: "Failed to update profile",
+            position: "center",
+            confirmButtonText: "OK",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: true,
+            timer: undefined,
+          });
+        });
     }
   };
 
   const handleDeleteAccount = () => {
-    const confirmDelete = window.confirm("Are you sure you want to delete your account?");
-    if (confirmDelete) {
-      alert("Account Deleted");
-    }
+    const token = localStorage.getItem('token');
+    if (!userObj) return;
+    Swal.fire({
+      icon: "warning",
+      title: "Are you sure?",
+      text: "Do you really want to delete your account?",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      position: "center",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch("http://localhost:5002/api/UserApi/DeleteUser", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ c_user_id: userObj.c_user_id }),
+        })
+          .then((res) => {
+            if (!res.ok) throw new Error("Delete failed");
+            return res.text();
+          })
+          .then((msg) => {
+            Swal.fire({
+              icon: "success",
+              title: msg || "Account Deleted",
+              position: "center",
+              confirmButtonText: "OK",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              showConfirmButton: true,
+              timer: undefined,
+            }).then(() => {
+              localStorage.removeItem('token');
+              window.location.href = "/login";
+            });
+          })
+          .catch(() => {
+            Swal.fire({
+              icon: "error",
+              title: "Failed to delete account",
+              position: "center",
+              confirmButtonText: "OK",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              showConfirmButton: true,
+              timer: undefined,
+            });
+          });
+      }
+    });
   };
 
   return (

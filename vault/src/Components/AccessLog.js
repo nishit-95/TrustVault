@@ -5,6 +5,11 @@ import "aos/dist/aos.css";
 
 export default function AccessLog() {
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = "/login"; // Redirect if no token
+      return;
+    }
     AOS.init({ duration: 1200, once: false });
   }, []);
 

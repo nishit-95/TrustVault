@@ -161,9 +161,9 @@ namespace API.ApiControllers
                 user.c_user_id = userId;
 
                 var result = await _userService.UpdateUserAsync(user);
-                if (result)
+                if (result != null)
                 {
-                    return Ok("User updated successfully.");
+                    return Ok(result);
                 }
                 return BadRequest("Failed to update user.");
             }
@@ -171,6 +171,7 @@ namespace API.ApiControllers
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
+            
         }
 
         [Authorize]

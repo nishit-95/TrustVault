@@ -14,8 +14,12 @@ export default function GrantConsent() {
   const [userDataTypeIds, setUserDataTypeIds] = useState([]); // Store user's data type ids
 
   useEffect(() => {
-    AOS.init({ duration: 1000 });
     const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = "/login"; // Redirect if no token
+      return;
+    }
+    AOS.init({ duration: 1000 });
 
     fetch("http://localhost:5002/api/PartnerApi/GetAllPartners", {
       headers: {
