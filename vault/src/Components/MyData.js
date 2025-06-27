@@ -15,8 +15,12 @@ export default function MyData() {
   const fileInputRef = useRef();
 
   useEffect(() => {
-    AOS.init({ duration: 600 });
     const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "/login"; // Redirect if no token
+      return;
+    }
+    AOS.init({ duration: 600 });
     fetch("http://localhost:5002/api/UserApi/GetDataTypesAsync", {
       headers: {
         Authorization: `Bearer ${token}`,

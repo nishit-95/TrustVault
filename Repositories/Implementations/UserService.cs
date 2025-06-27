@@ -199,7 +199,7 @@ namespace Repositories.Implementations
                                 c_user_id = reader.GetInt32(reader.GetOrdinal("c_user_id")),
                                 c_full_name = reader.GetString(reader.GetOrdinal("c_full_name")),
                                 c_email = reader.GetString(reader.GetOrdinal("c_email")),
-                                c_password = reader.GetString(reader.GetOrdinal("c_password_hash")),
+                                c_password = reader.GetString(reader.GetOrdinal("c_password")),
                                 c_phone = reader.IsDBNull(reader.GetOrdinal("c_phone")) ? null : reader.GetString(reader.GetOrdinal("c_phone")),
                                 c_country = reader.IsDBNull(reader.GetOrdinal("c_country")) ? null : reader.GetString(reader.GetOrdinal("c_country")),
                                 c_created_at = reader.GetDateTime(reader.GetOrdinal("c_created_at"))
@@ -332,36 +332,44 @@ namespace Repositories.Implementations
             throw new NotImplementedException();
         }
 
-        public Task<bool> UpdateUserAsync(t_users user)
+        public async Task<bool> UpdateUserAsync(t_users user)
         {
             if (_conn.State != System.Data.ConnectionState.Open)
             {
-                _conn.Open();
+                await _conn.OpenAsync();
             }
             try
             {
                 using (var cmd = _conn.CreateCommand())
                 {
-                    cmd.CommandText = "UPDATE t_users SET c_full_name = @FullName, c_email = @Email, c_phone = @Phone, c_country = @Country WHERE c_user_id = @UserId";
-                    cmd.Parameters.AddWithValue("@FullName", user.c_full_name ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Email", user.c_email ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Phone", user.c_phone ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Country", user.c_country ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@UserId", user.c_user_id);
+                    cmd.CommandText = @"
+                    UPDATE t_users 
+                    SET c_full_name = @FullName, 
+                        c_email = @Email, 
+                        c_phone = @Phone, 
+                        c_country = @Country 
+                    WHERE c_user_id = @UserId";
 
-                    return Task.FromResult(cmd.ExecuteNonQuery() > 0);
+                    cmd.Parameters.AddWithValue("@UserId", user.c_user_id);
+                    cmd.Parameters.AddWithValue("@FullName", user.c_full_name);
+                    cmd.Parameters.AddWithValue("@Email", user.c_email);
+                    cmd.Parameters.AddWithValue("@Phone", (object)user.c_phone ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Country", (object)user.c_country ?? DBNull.Value);
+
+                    int rowsAffected = await cmd.ExecuteNonQueryAsync();
+                    return rowsAffected > 0;
                 }
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
-                Console.WriteLine("An error occurred while updating the user.");
-                return Task.FromResult(false);
+                Console.WriteLine("An error occurred while updating the user: " + ex.Message);
+                return false;
             }
             finally
             {
                 if (_conn.State == System.Data.ConnectionState.Open)
                 {
-                    _conn.Close();
+                    await _conn.CloseAsync();
                 }
             }
         }
