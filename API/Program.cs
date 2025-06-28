@@ -83,7 +83,6 @@ builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 
-builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
