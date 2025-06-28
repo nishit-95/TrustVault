@@ -21,7 +21,7 @@ export default function MyData() {
       return;
     }
     AOS.init({ duration: 600 });
-    fetch("http://localhost:5002/api/UserApi/GetDataTypesAsync", {
+    fetch("https://trustvault-aaqt.onrender.com/api/UserApi/GetDataTypesAsync", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -34,7 +34,7 @@ export default function MyData() {
 
   const fetchDocuments = () => {
     const token = localStorage.getItem("token");
-    fetch("http://localhost:5002/api/UserApi/GetUserDocuments", {
+    fetch("https://trustvault-aaqt.onrender.com/api/UserApi/GetUserDocuments", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -84,7 +84,7 @@ export default function MyData() {
 
     try {
       const response = await fetch(
-        "http://localhost:5002/api/UserApi/UploadDocument",
+        "https://trustvault-aaqt.onrender.com/api/UserApi/UploadDocument",
         {
           method: "POST",
           headers: {
@@ -128,7 +128,7 @@ export default function MyData() {
 
     try {
       const response = await fetch(
-        `http://localhost:5002/api/UserApi/DeleteDocument/${id}`,
+        `https://trustvault-aaqt.onrender.com/api/UserApi/DeleteDocument/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -247,7 +247,7 @@ export default function MyData() {
                     <td className="p-4 space-x-4">
                       {doc.c_file_url && (
                         <a
-                          href={`http://localhost:5002/${doc.c_file_url}`}
+                          href={`https://trustvault-aaqt.onrender.com/${doc.c_file_url}`}
                           className="text-green-600 hover:underline"
                           target="_blank"
                           rel="noopener noreferrer"

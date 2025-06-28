@@ -21,7 +21,7 @@ export default function GrantConsent() {
     }
     AOS.init({ duration: 1000 });
 
-    fetch("http://localhost:5002/api/PartnerApi/GetAllPartners", {
+    fetch("https://trustvault-aaqt.onrender.com/api/PartnerApi/GetAllPartners", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -31,7 +31,7 @@ export default function GrantConsent() {
       .catch(() => setPartners([]));
 
     // Fetch all data types
-    fetch("http://localhost:5002/api/UserApi/GetDataTypesAsync", {
+    fetch("https://trustvault-aaqt.onrender.com/api/UserApi/GetDataTypesAsync", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -41,7 +41,7 @@ export default function GrantConsent() {
       .catch(() => setDataTypes([]));
 
     // Fetch user documents and extract data type ids
-    fetch("http://localhost:5002/api/UserApi/GetUserDocuments", {
+    fetch("https://trustvault-aaqt.onrender.com/api/UserApi/GetUserDocuments", {
       headers: {
         Authorization: `Bearer ${token}`,
       },

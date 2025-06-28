@@ -28,7 +28,7 @@ export default function UpdateProfilePage() {
     AOS.init({ duration: 1200, once: false });
 
     // Fetch user profile data
-    fetch("http://localhost:5002/api/UserApi/GetUserById", {
+    fetch("https://trustvault-aaqt.onrender.com/api/UserApi/GetUserById", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -84,7 +84,7 @@ export default function UpdateProfilePage() {
       const token = localStorage.getItem('token');
       if (!userObj) return; // Don't submit if userObj not loaded
 
-      fetch("http://localhost:5002/api/UserApi/UpdateUser", {
+      fetch("https://trustvault-aaqt.onrender.com/api/UserApi/UpdateUser", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -147,7 +147,7 @@ export default function UpdateProfilePage() {
       allowEscapeKey: false,
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch("http://localhost:5002/api/UserApi/DeleteUser", {
+        fetch("https://trustvault-aaqt.onrender.com/api/UserApi/DeleteUser", {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",

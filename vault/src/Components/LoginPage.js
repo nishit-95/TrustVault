@@ -43,7 +43,7 @@ export default function LoginPage() {
     e.preventDefault();
     if (validate()) {
       try {
-        const response = await fetch("http://localhost:5002/api/UserApi/Login", {
+        const response = await fetch("https://trustvault-aaqt.onrender.com/api/UserApi/Login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
