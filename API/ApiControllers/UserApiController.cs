@@ -26,6 +26,12 @@ namespace API.ApiControllers
 
         }
 
+        [HttpGet("ping")]
+        public IActionResult Ping()
+        {
+            return Ok("✅ User API is live!");
+        }
+
         private int GetUserIdFromToken()
         {
             var userIdClaim = HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier);
@@ -171,7 +177,7 @@ namespace API.ApiControllers
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
-            
+
         }
 
         [Authorize]
@@ -320,7 +326,7 @@ namespace API.ApiControllers
             }
         }
 
-        
+
 
 
     }
