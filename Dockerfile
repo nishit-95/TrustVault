@@ -5,13 +5,13 @@ WORKDIR /src
 # Copy solution and project files
 COPY *.sln ./
 COPY API/API.csproj ./API/
-COPY Repository/Repository.csproj ./Repository/
+COPY Repositories/Repositories.csproj ./Repositories/
 
 # Restore dependencies
-RUN dotnet restore ./API/API.csproj
+RUN dotnet restore
 
-# Copy all source code
-COPY . ./
+# Copy full source
+COPY . .
 
 # Publish the API project
 WORKDIR /src/API
@@ -22,6 +22,8 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build /app/publish .
 
+# Optional: Expose port
 EXPOSE 80
 
+# Start the app
 ENTRYPOINT ["dotnet", "API.dll"]
