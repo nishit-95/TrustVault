@@ -45,7 +45,20 @@ export default function MyData() {
   };
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    const selected = e.target.files[0];
+    if (
+      selected &&
+      !(
+        selected.type === "application/pdf" ||
+        selected.type.startsWith("image/")
+      )
+    ) {
+      Swal.fire("Error", "Only PDF and image files are allowed.", "error");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      setFile(null);
+      return;
+    }
+    setFile(selected);
   };
 
   const handleUpload = async () => {
@@ -165,11 +178,16 @@ export default function MyData() {
               onChange={(e) => setSelectedDoc(e.target.value)}
             >
               <option value="">-- Select Document --</option>
-              {docTypes.map((type) => (
-                <option key={type.c_data_id} value={type.c_data_name}>
-                  {type.c_data_name}
-                </option>
-              ))}
+              {docTypes
+                .filter(
+                  (type) =>
+                    !documents.some((doc) => doc.c_data_id === type.c_data_id)
+                )
+                .map((type) => (
+                  <option key={type.c_data_id} value={type.c_data_name}>
+                    {type.c_data_name}
+                  </option>
+                ))}
             </select>
           </div>
 
@@ -179,6 +197,7 @@ export default function MyData() {
               type="file"
               ref={fileInputRef}
               onChange={handleFileChange}
+              accept="application/pdf,image/*"
               className="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600"
             />
           </div>

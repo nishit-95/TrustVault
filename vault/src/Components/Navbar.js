@@ -17,11 +17,11 @@ export default function Navbar() {
   }, [theme]);
 
   return (
-    <nav className="flex justify-between items-center px-6 py-4 bg-gray-100 dark:bg-gray-800 shadow-md">
+    <nav className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 py-4 bg-gray-100 dark:bg-gray-800 shadow-md">
       {/* Logo */}
-      <div className="text-xl font-bold text-blue-600 dark:text-white">
+      <Link to="/" className="text-xl font-bold text-blue-600 dark:text-white">
         TrustVault
-      </div>
+      </Link>
 
       {/* Right buttons */}
       <div className="flex items-center space-x-4">

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 export default function HeroSection() {
   return (
-    <section className="relative overflow-hidden py-24 px-6 text-center bg-white dark:bg-gray-950">
+    <section className="relative overflow-hidden py-24 px-6 text-center bg-white dark:bg-gray-950 mt-16">
       {/* Hero Background Glows */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         {/* Pink Glow Top Left */}
