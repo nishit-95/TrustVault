@@ -14,7 +14,7 @@ export default function GrantConsent() {
   const [userDataTypeIds, setUserDataTypeIds] = useState([]); // Store user's data type ids
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
       window.location.href = "/login"; // Redirect if no token
       return;
@@ -159,24 +159,44 @@ export default function GrantConsent() {
 
             {/* Duration */}
             <div className="grid md:grid-cols-2 gap-6">
+              {/* Start Time */}
+              {/* Start Time */}
               <div>
                 <label className="block mb-2 font-medium">Start Time</label>
                 <input
                   type="datetime-local"
                   value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
+                  min={new Date().toISOString().slice(0, 16)} // disable past date+time
+                  onChange={(e) => {
+                    setStartTime(e.target.value);
+                    if (endTime && e.target.value > endTime) setEndTime(""); // reset end if invalid
+                  }}
                   className="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600"
                 />
               </div>
 
-              <div>
+              {/* End Time */}
+              <div className="relative group">
                 <label className="block mb-2 font-medium">End Time</label>
                 <input
                   type="datetime-local"
                   value={endTime}
+                  min={startTime}
                   onChange={(e) => setEndTime(e.target.value)}
-                  className="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600"
+                  disabled={!startTime}
+                  className={`w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-800 border ${
+                    !startTime
+                      ? "opacity-50 cursor-not-allowed"
+                      : "border-gray-300 dark:border-gray-600"
+                  }`}
                 />
+
+                {/* Custom Tooltip */}
+                {!startTime && (
+                  <div className="absolute top-full left-0 mt-1 px-2 py-1 text-sm bg-black text-white rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-100 z-10">
+                    Select start time first
+                  </div>
+                )}
               </div>
             </div>
 
