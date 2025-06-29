@@ -12,16 +12,16 @@ import ClientsSection from "./Components/ClientsSection";
 import Footer from "./Components/Footer";
 
 // Login and Registration 
-import RegisterPage from "./Components/RegisterPage"; 
-import LoginPage from "./Components/LoginPage";
+import RegisterPage from "./Components/User/UserRegisterPage"; 
+import LoginPage from "./Components/User/UserLoginPage";
 
 // User Page 
-import Layout from "./Components/Layout";
+import Layout from "./Components/User/Layout";
 import HomePage from "./Components/HomePage";
-import MyData from "./Components/MyData";
-import GrantConsent from "./Components/GrantConsent";
-import AccessLog from "./Components/AccessLog";
-import UpdateProfilePage from "./Components/UpdateProfilePage";
+import MyData from "./Components/User/MyData";
+import GrantConsent from "./Components/User/GrantConsent";
+import AccessLog from "./Components/User/AccessLog";
+import UpdateProfilePage from "./Components/User/UpdateProfilePage";
 
 // Company Pages
 import CompanyLogin from "./Components/Company/CompanyLogin";
