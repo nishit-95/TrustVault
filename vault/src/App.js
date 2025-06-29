@@ -29,6 +29,7 @@ import CompanyRegister from "./Components/Company/CompanyRegister";
 import CompanyLayout from "./Components/Company/CompanyLayout";
 import CompanyUserData from "./Components/Company/CompanyUserData";
 import CompanyRequestedData from "./Components/Company/CompanyRequestedData";
+import CompanyUpdateProfile from "./Components/Company/CompanyUpdateProfile";
 
 // Admin Page 
 import AdminLogin from './Components/Admin/AdminLogin';
@@ -87,7 +88,7 @@ function App() {
             <Route path="/company-user-data" element={<CompanyUserData />} />
             <Route path="/company-requested-data" element={<CompanyRequestedData />} />
             <Route path="/access-log" element={<AccessLog />} />
-            <Route path="/update-profile" element={<UpdateProfilePage />} />
+            <Route path="/company-update-profile" element={<CompanyUpdateProfile />} />
           </Route>
 
           {/* Admin */}
