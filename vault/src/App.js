@@ -5,11 +5,11 @@ import 'aos/dist/aos.css';
 
 // Landing Page
 import Navbar from "./Components/Navbar";
-import HeroSection from "./Components/HeroSection";
-import CarousalSection from "./Components/CarousalSection";
-import AboutSection from "./Components/AboutSection";
-import ClientsSection from "./Components/ClientsSection";
-import Footer from "./Components/Footer";
+import HeroSection from "./Components/LandingPage/HeroSection";
+import CarousalSection from "./Components/LandingPage/CarousalSection";
+import AboutSection from "./Components/LandingPage/AboutSection";
+import ClientsSection from "./Components/LandingPage/ClientsSection";
+import Footer from "./Components/LandingPage/Footer";
 
 // Login and Registration 
 import RegisterPage from "./Components/User/UserRegisterPage"; 
