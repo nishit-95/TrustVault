@@ -31,7 +31,11 @@ import CompanyUserData from "./Components/Company/CompanyUserData";
 import CompanyRequestedData from "./Components/Company/CompanyRequestedData";
 
 // Admin Page 
-import AdminLogin from './Components/Admin/AdmingLogin';
+import AdminLogin from './Components/Admin/AdminLogin';
+import AdminLayout from './Components/Admin/AdminLayout';
+import UserOfAdmin from './Components/Admin/UserOfAdmin';
+import CompanyUserOfAdmin from './Components/Admin/CompanyUserOfAdmin';
+import SubscriberOfAdmin from './Components/Admin/SubscriberOfAdmin';
 
 
 function App() {
@@ -59,12 +63,13 @@ function App() {
     <Router>
       <div className="min-h-screen bg-white dark:bg-gray-900">
         <Routes>
+          {/* Landing Page */}
           <Route path="/" element={<LandingPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+
+          {/* User */}
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/company-login" element={<CompanyLogin />} />
-          <Route path="/company-register" element={<CompanyRegister />} />
-          
+          <Route path="/register" element={<RegisterPage />} />
+
           <Route element={<Layout />}>
             <Route path="/homepage" element={<HomePage />} /> 
             <Route path="/mydata" element={<MyData />} />
@@ -72,6 +77,11 @@ function App() {
             <Route path="/access-log" element={<AccessLog />} />
             <Route path="/update-profile" element={<UpdateProfilePage />} />
           </Route>
+
+          {/* Company */}
+          <Route path="/company-login" element={<CompanyLogin />} />
+          <Route path="/company-register" element={<CompanyRegister />} />
+
           <Route element={<CompanyLayout />}>
             <Route path="/homepage" element={<HomePage />} /> 
             <Route path="/company-user-data" element={<CompanyUserData />} />
@@ -79,7 +89,15 @@ function App() {
             <Route path="/access-log" element={<AccessLog />} />
             <Route path="/update-profile" element={<UpdateProfilePage />} />
           </Route>
-          <Route path="/AdminLogin" element={<AdminLogin />} />
+
+          {/* Admin */}
+          <Route path="/admin-login" element={<AdminLogin />} />
+
+          <Route element={<AdminLayout />}>
+            <Route path="/user-of-admin" element={<UserOfAdmin />} /> 
+            <Route path="/company-user-of-admin" element={<CompanyUserOfAdmin />} /> 
+            <Route path="/subscriber-of-admin" element={<SubscriberOfAdmin />} /> 
+          </Route>
         </Routes>
       </div>
     </Router>

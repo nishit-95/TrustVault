@@ -13,7 +13,7 @@ export default function Footer() {
 
   const confirmAdminRedirect = () => {
     setShowAdminModal(false);
-    navigate("/AdminLogin");
+    navigate("/Admin-login");
   };
 
   const cancelAdminRedirect = () => {
