@@ -1,5 +1,8 @@
-import { Link } from 'react-router-dom';
+import { useState } from "react";
+import RoleSelectionModal from "./RoleSelectionModal";
 export default function HeroSection() {
+  const [showRoleModal, setShowRoleModal] = useState(false);
+
   return (
     <section className="relative overflow-hidden py-24 px-6 text-center bg-white dark:bg-gray-950 mt-16">
       {/* Hero Background Glows */}
@@ -29,11 +32,16 @@ export default function HeroSection() {
         <p className="text-lg text-gray-700 dark:text-gray-300 mb-8">
           Secure, simple, and fast financial infrastructure for your digital business.
         </p>
-        <Link to="/register">
-          <button className="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition duration-300 shadow-lg hover:shadow-xl">
-            Get Started
-          </button>
-        </Link>
+
+        <button
+          onClick={() => setShowRoleModal(true)}
+          className="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition duration-300 shadow-lg hover:shadow-xl"
+        >
+          Get Started
+        </button>
+
+        {/* Role Selection Modal */}
+        <RoleSelectionModal show={showRoleModal} onClose={() => setShowRoleModal(false)} />
       </div>
     </section>
   );
