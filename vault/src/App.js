@@ -17,7 +17,7 @@ import LoginPage from "./Components/User/UserLoginPage";
 
 // User Page 
 import Layout from "./Components/User/Layout";
-import HomePage from "./Components/HomePage";
+import HomePage from "./Components/User/HomePage";
 import MyData from "./Components/User/MyData";
 import GrantConsent from "./Components/User/GrantConsent";
 import AccessLog from "./Components/User/AccessLog";
@@ -27,9 +27,11 @@ import UpdateProfilePage from "./Components/User/UpdateProfilePage";
 import CompanyLogin from "./Components/Company/CompanyLogin";
 import CompanyRegister from "./Components/Company/CompanyRegister";
 import CompanyLayout from "./Components/Company/CompanyLayout";
+import CompanyHomepage from "./Components/Company/CompanyHomepage";
 import CompanyUserData from "./Components/Company/CompanyUserData";
 import CompanyRequestedData from "./Components/Company/CompanyRequestedData";
 import CompanyUpdateProfile from "./Components/Company/CompanyUpdateProfile";
+import CompanyAccessLog from "./Components/Company/CompanyAccessLog";
 
 // Admin Page 
 import AdminLogin from './Components/Admin/AdminLogin';
@@ -84,10 +86,10 @@ function App() {
           <Route path="/company-register" element={<CompanyRegister />} />
 
           <Route element={<CompanyLayout />}>
-            <Route path="/homepage" element={<HomePage />} /> 
+            <Route path="/company-homepage" element={<CompanyHomepage />} /> 
             <Route path="/company-user-data" element={<CompanyUserData />} />
             <Route path="/company-requested-data" element={<CompanyRequestedData />} />
-            <Route path="/access-log" element={<AccessLog />} />
+            <Route path="/company-access-log" element={<CompanyAccessLog />} />
             <Route path="/company-update-profile" element={<CompanyUpdateProfile />} />
           </Route>
 
