@@ -91,7 +91,7 @@ export default function RegisterPage() {
       try {
         const payload = { ...formData };
         delete payload.confirmPassword;
-        const response = await fetch("http://localhost:5002/api/UserApi/Register", {
+        const response = await fetch("https://trustvault-aaqt.onrender.com/api/UserApi/Register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
