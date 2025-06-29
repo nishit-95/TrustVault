@@ -4,7 +4,7 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 
 // Landing Page
-import Navbar from "./Components/Navbar";
+import Navbar from "./Components/LandingPage/Navbar";
 import HeroSection from "./Components/LandingPage/HeroSection";
 import CarousalSection from "./Components/LandingPage/CarousalSection";
 import AboutSection from "./Components/LandingPage/AboutSection";
