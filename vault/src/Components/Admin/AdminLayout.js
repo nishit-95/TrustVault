@@ -1,12 +1,14 @@
 // src/Components/Admin/AdminLayout.js
 import React, { useState, useEffect } from "react";
-import { Link, Outlet, useLocation } from "react-router-dom";
-import { Users, Building2, MailOpen, Menu, X, Sun, Moon } from "lucide-react";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Users, Building2, MailOpen, Menu, X, Sun, Moon, LogOut } from "lucide-react";
+import Swal from "sweetalert2";
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   const navItems = [
     { path: "/user-of-admin", label: "Users", icon: <Users size={20} /> },
@@ -17,6 +19,23 @@ export default function AdminLayout() {
   const toggleTheme = () => {
     setDarkMode(!darkMode);
     document.documentElement.classList.toggle("dark");
+  };
+
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to logout from Admin Desk?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, logout",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.removeItem("token");
+        navigate("/"); // redirect to landing page
+      }
+    });
   };
 
   useEffect(() => {
@@ -40,7 +59,7 @@ export default function AdminLayout() {
         backdrop-blur-md bg-white/90 dark:bg-[#151525] shadow-2xl border-r border-gray-300 dark:border-gray-700`}>
 
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-200 dark:border-gray-700">
-          {/* Title + Theme button in one line */}
+          {/* Title + Theme button */}
           <div className="flex items-center gap-6">
             <h1 className="text-2xl font-extrabold text-[#273c75] dark:text-indigo-300 tracking-wide">
               Admin Desk
@@ -63,6 +82,7 @@ export default function AdminLayout() {
           </button>
         </div>
 
+        {/* Navigation Links */}
         <nav className="px-5 pt-6 space-y-4">
           {navItems.map(({ path, label, icon }) => (
             <Link
@@ -79,13 +99,22 @@ export default function AdminLayout() {
               {label}
             </Link>
           ))}
+
+          {/* Logout Button */}
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-4 w-full px-4 py-2 rounded-xl font-medium text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-800 transition-all mt-4"
+          >
+            <LogOut size={20} />
+            Logout
+          </button>
         </nav>
       </aside>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col ml-0 md:ml-64">
 
-        {/* Topbar for Mobile */}
+        {/* Mobile Topbar */}
         <header className="md:hidden flex justify-between items-center p-4 shadow bg-white dark:bg-[#1a1a2a] border-b dark:border-gray-700">
           <button onClick={() => setSidebarOpen(true)} className="text-gray-700 dark:text-gray-300">
             <Menu size={24} />
