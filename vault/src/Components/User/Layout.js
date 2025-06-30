@@ -1,175 +1,129 @@
+// src/Components/Layout.js
 import React, { useState, useEffect } from "react";
-import { Moon, Sun, Menu, X } from "lucide-react";
-import { Link, Outlet, useNavigate } from "react-router-dom";
-import AOS from "aos";
-import "aos/dist/aos.css";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Home, FolderOpen, ShieldCheck, FileText, UserCog, Menu, X, Sun, Moon, LogOut } from "lucide-react";
+import Swal from "sweetalert2";
 
 export default function Layout() {
-  const [darkMode, setDarkMode] = useState(false);
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+  const { pathname } = useLocation();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", darkMode);
-  }, [darkMode]);
-
-  useEffect(() => {
-    AOS.init({ duration: 1200, once: false });
-  }, []);
-
-  const toggleTheme = () => setDarkMode(!darkMode);
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-  const handleLogoutClick = () => setShowLogoutModal(true);
-  const confirmLogout = () => {
-    setShowLogoutModal(false);
-    localStorage.removeItem("token");
-    navigate("/");
-  };
-  const cancelLogout = () => setShowLogoutModal(false);
-
-  const navLinks = [
-    { name: "Home", path: "/homepage" },
-    { name: "My Data", path: "/mydata" },
-    { name: "Grant Consent", path: "/grant-consent" },
-    { name: "Access Logs", path: "/access-log" },
-    { name: "Update Profile", path: "/update-profile" },
+  const navItems = [
+    { path: "/homepage", label: "Home", icon: <Home size={20} /> },
+    { path: "/mydata", label: "My Data", icon: <FolderOpen size={20} /> },
+    { path: "/grant-consent", label: "Grant Consent", icon: <ShieldCheck size={20} /> },
+    { path: "/access-log", label: "Access Logs", icon: <FileText size={20} /> },
+    { path: "/update-profile", label: "Update Profile", icon: <UserCog size={20} /> },
   ];
 
+  const toggleTheme = () => {
+    setDarkMode(!darkMode);
+    document.documentElement.classList.toggle("dark");
+  };
+
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to logout?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, logout",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.removeItem("token");
+        navigate("/");
+      }
+    });
+  };
+
+  useEffect(() => {
+    const isDark = localStorage.getItem("theme") === "dark";
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+      setDarkMode(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-blue-50 to-pink-100 dark:from-gray-900 dark:via-gray-800 dark:to-black dark:text-white transition-colors duration-300 relative">
-      
-      {/* Navbar */}
-      <nav className="relative h-[70px] flex justify-between items-center px-6 py-4 shadow-md bg-white dark:bg-gray-900 dark:text-white z-50">
-        <div className="text-2xl font-bold text-primary">TrustVault</div>
+    <div className="flex min-h-screen bg-gradient-to-tr from-purple-100 via-blue-50 to-pink-100 dark:from-gray-900 dark:via-gray-800 dark:to-black text-gray-800 dark:text-gray-100 font-sans">
 
-        {/* Desktop Right-Aligned Nav + Settings */}
-        <div className="hidden md:flex items-center gap-6">
-          <ul className="flex gap-6 text-lg">
-            {navLinks
-              .filter((link) => link.name !== "Update Profile")
-              .map((link, index) => (
-                <li key={index} data-aos="fade-up" data-aos-delay={index * 100}>
-                  <Link to={link.path} className="hover:text-primary transition-colors duration-150">
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-          </ul>
+      {/* Sidebar */}
+      <aside className={`fixed z-50 top-0 left-0 h-full w-64 transform transition-transform duration-300
+        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0
+        backdrop-blur-md bg-white/90 dark:bg-[#151525] shadow-2xl border-r border-gray-300 dark:border-gray-700`}>
 
-          {/* Gear + Theme Toggle */}
-          <div className="flex items-center gap-2 px-2 py-1 rounded-full bg-gray-200 dark:bg-gray-700">
-            <li className="relative group list-none">
-              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-gray-800">
-                <button className="text-2xl text-gray-800 dark:text-white transition-transform duration-[1200ms] group-hover:rotate-[120deg]">
-                  ⛮
-                </button>
-              </div>
-              <ul className="absolute right-0 mt-2 w-44 bg-white dark:bg-gray-900 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all duration-200 z-50">
-                <li>
-                  <Link
-                    to="/update-profile"
-                    className="block w-full text-left px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Update Profile
-                  </Link>
-                </li>
-                <li>
-                  <button
-                    onClick={handleLogoutClick}
-                    className="block w-full text-left px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Log Out
-                  </button>
-                </li>
-              </ul>
-            </li>
-
-            <div className="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-gray-800">
-              <button onClick={toggleTheme} className="text-gray-800 dark:text-white" aria-label="Toggle Theme">
-                {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-              </button>
-            </div>
+        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center gap-4">
+            <h1 className="text-2xl font-extrabold text-[#6f42c1] dark:text-indigo-300 tracking-wide">
+              TrustVault
+            </h1>
+            <button
+              onClick={toggleTheme}
+              title="Toggle Theme"
+              className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 transition"
+            >
+              {darkMode ? <Sun size={16} className="text-yellow-400" /> : <Moon size={16} className="text-gray-800" />}
+            </button>
           </div>
+          <button onClick={() => setSidebarOpen(false)} className="md:hidden text-gray-600 dark:text-gray-300">
+            <X size={22} />
+          </button>
         </div>
 
-        {/* Hamburger for Mobile */}
-        <button className="md:hidden text-gray-800 dark:text-white" onClick={toggleSidebar}>
-          {sidebarOpen ? <X size={28} /> : <Menu size={28} />}
-        </button>
-      </nav>
+        {/* Navigation */}
+        <nav className="px-5 pt-6 space-y-4">
+          {navItems.map(({ path, label, icon }) => (
+            <Link
+              key={path}
+              to={path}
+              className={`flex items-center gap-4 px-4 py-2 rounded-xl font-medium transition-all duration-200
+              ${
+                pathname === path
+                  ? "bg-gradient-to-r from-[#6f42c1] via-[#d63384] to-[#fd7e14] text-white shadow-md"
+                  : "hover:bg-gradient-to-r hover:from-purple-100 hover:to-pink-100 dark:hover:from-[#2e2e60] dark:hover:to-[#3a3a6a] text-gray-700 dark:text-gray-200"
+              }`}
+            >
+              {icon}
+              {label}
+            </Link>
+          ))}
 
-      {/* Overlay */}
-      {sidebarOpen && (
-        <div onClick={toggleSidebar} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
-      )}
-
-      {/* Sidebar for Mobile */}
-      <div
-        className={`fixed top-0 right-0 h-full w-2/3 max-w-xs bg-white dark:bg-gray-900 shadow-lg z-50 transform ${
-          sidebarOpen ? "translate-x-0" : "translate-x-full"
-        } transition-transform duration-300 p-6 space-y-6`}
-      >
-        {navLinks.map((link, index) => (
-          <Link
-            key={index}
-            to={link.path}
-            className="block text-lg text-gray-800 dark:text-white font-medium hover:underline"
-            onClick={toggleSidebar}
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-4 w-full px-4 py-2 rounded-xl font-medium text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-800 transition-all mt-4"
           >
-            {link.name}
-          </Link>
-        ))}
+            <LogOut size={20} />
+            Log Out
+          </button>
+        </nav>
+      </aside>
 
-        <hr className="border-gray-300 dark:border-gray-700" />
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col ml-0 md:ml-64">
 
-        <button
-          onClick={() => {
-            toggleSidebar();
-            handleLogoutClick();
-          }}
-          className="block w-full text-left text-red-600 dark:text-red-400 font-semibold"
-        >
-          Log Out
-        </button>
+        {/* Mobile Topbar */}
+        <header className="md:hidden flex justify-between items-center p-4 shadow bg-white dark:bg-[#1a1a2a] border-b dark:border-gray-700">
+          <button onClick={() => setSidebarOpen(true)} className="text-gray-700 dark:text-gray-300">
+            <Menu size={24} />
+          </button>
+          <h2 className="text-lg font-semibold text-[#6f42c1] dark:text-indigo-300">User Dashboard</h2>
+        </header>
 
-        <button
-          onClick={toggleTheme}
-          className="mt-4 flex items-center gap-2 text-gray-700 dark:text-white"
-        >
-          {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-          {darkMode ? "Light Mode" : "Dark Mode"}
-        </button>
-      </div>
-
-      {/* Logout Confirmation Modal */}
-      {showLogoutModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 text-center rounded-xl p-6 w-[90%] max-w-md shadow-lg">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
-              Are you sure you want to log out?
-            </h2>
-            <div className="flex justify-center gap-4">
-              <button
-                onClick={confirmLogout}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-              >
-                Yes
-              </button>
-              <button
-                onClick={cancelLogout}
-                className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
-              >
-                No
-              </button>
-            </div>
+        {/* Page Outlet */}
+        <main className="p-6">
+          <div className="bg-white/80 dark:bg-[#202034] backdrop-blur-lg rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 p-4 min-h-[85vh] transition-all">
+            <Outlet />
           </div>
-        </div>
-      )}
-
-      <main>
-        <Outlet />
-      </main>
+        </main>
+      </div>
     </div>
   );
 }
