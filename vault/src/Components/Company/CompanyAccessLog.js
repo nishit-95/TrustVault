@@ -47,7 +47,7 @@ export default function AccessLog() {
         className="bg-white dark:bg-gray-900 shadow-lg rounded-2xl p-6"
         data-aos="fade-up"
       >
-        <h2 className="text-2xl font-bold mb-6 text-primary">Access Logs</h2>
+        <h2 className="text-2xl font-bold mb-6 text-primary dark:text-sky-400">Access Logs</h2>
 
         <div className="overflow-hidden">
           <table className="min-w-full table-auto border-collapse">
