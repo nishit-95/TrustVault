@@ -1,7 +1,16 @@
 // src/Components/Admin/AdminLayout.js
 import React, { useState, useEffect } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Users, Building2, MailOpen, Menu, X, Sun, Moon, LogOut } from "lucide-react";
+import {
+  Users,
+  Building2,
+  MailOpen,
+  Menu,
+  X,
+  Sun,
+  Moon,
+  LogOut,
+} from "lucide-react";
 import Swal from "sweetalert2";
 
 export default function AdminLayout() {
@@ -33,7 +42,7 @@ export default function AdminLayout() {
     }).then((result) => {
       if (result.isConfirmed) {
         localStorage.removeItem("token");
-        navigate("/"); // redirect to landing page
+        navigate("/");
       }
     });
   };
@@ -52,14 +61,13 @@ export default function AdminLayout() {
 
   return (
     <div className="flex min-h-screen bg-gradient-to-tr from-[#fdfcfb] via-[#e2ebf0] to-[#f7faff] dark:from-[#1f1f2f] dark:to-[#0f0f1a] text-gray-800 dark:text-gray-100 font-sans">
-
+      
       {/* Sidebar */}
       <aside className={`fixed z-50 top-0 left-0 h-full w-64 transform transition-transform duration-300
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0
         backdrop-blur-md bg-white/90 dark:bg-[#151525] shadow-2xl border-r border-gray-300 dark:border-gray-700`}>
-
+        
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-200 dark:border-gray-700">
-          {/* Title + Theme button */}
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-extrabold text-[#273c75] dark:text-indigo-300 tracking-wide">
               Admin Desk
@@ -77,12 +85,14 @@ export default function AdminLayout() {
             </button>
           </div>
 
-          <button onClick={() => setSidebarOpen(false)} className="md:hidden text-gray-600 dark:text-gray-300">
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="md:hidden text-gray-600 dark:text-gray-300"
+          >
             <X size={22} />
           </button>
         </div>
 
-        {/* Navigation Links */}
         <nav className="px-5 pt-6 space-y-4">
           {navItems.map(({ path, label, icon }) => (
             <Link
@@ -100,7 +110,6 @@ export default function AdminLayout() {
             </Link>
           ))}
 
-          {/* Logout Button */}
           <button
             onClick={handleLogout}
             className="flex items-center gap-4 w-full px-4 py-2 rounded-xl font-medium text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-800 transition-all mt-4"
@@ -112,19 +121,22 @@ export default function AdminLayout() {
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col ml-0 md:ml-64">
-
+      <div className="flex-1 flex flex-col ml-0 md:ml-64 min-h-screen">
+        
         {/* Mobile Topbar */}
         <header className="md:hidden flex justify-between items-center p-4 shadow bg-white dark:bg-[#1a1a2a] border-b dark:border-gray-700">
-          <button onClick={() => setSidebarOpen(true)} className="text-gray-700 dark:text-gray-300">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="text-gray-700 dark:text-gray-300"
+          >
             <Menu size={24} />
           </button>
           <h2 className="text-lg font-semibold text-[#273c75] dark:text-indigo-300">Admin Dashboard</h2>
         </header>
 
         {/* Page Content */}
-        <main className="p-6">
-          <div className="bg-white/80 dark:bg-[#202034] backdrop-blur-lg rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 p-4 min-h-[85vh] transition-all">
+        <main className="p-6 flex-1 flex flex-col">
+          <div className="flex-1 bg-white/80 dark:bg-[#202034] backdrop-blur-lg rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 p-4 min-h-full transition-all">
             <Outlet />
           </div>
         </main>
