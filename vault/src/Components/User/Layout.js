@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, Menu, X } from "lucide-react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -7,6 +7,7 @@ import "aos/dist/aos.css";
 export default function Layout() {
   const [darkMode, setDarkMode] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,20 +19,14 @@ export default function Layout() {
   }, []);
 
   const toggleTheme = () => setDarkMode(!darkMode);
-
-  const handleLogoutClick = () => {
-    setShowLogoutModal(true);
-  };
-
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  const handleLogoutClick = () => setShowLogoutModal(true);
   const confirmLogout = () => {
     setShowLogoutModal(false);
     localStorage.removeItem("token");
     navigate("/");
   };
-
-  const cancelLogout = () => {
-    setShowLogoutModal(false);
-  };
+  const cancelLogout = () => setShowLogoutModal(false);
 
   const navLinks = [
     { name: "Home", path: "/homepage" },
@@ -43,39 +38,33 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-100 via-blue-50 to-pink-100 dark:from-gray-900 dark:via-gray-800 dark:to-black dark:text-white transition-colors duration-300 relative">
+      
+      {/* Navbar */}
       <nav className="relative h-[70px] flex justify-between items-center px-6 py-4 shadow-md bg-white dark:bg-gray-900 dark:text-white z-50">
         <div className="text-2xl font-bold text-primary">TrustVault</div>
 
-        <div className="flex items-center gap-4">
+        {/* Desktop Right-Aligned Nav + Settings */}
+        <div className="hidden md:flex items-center gap-6">
           <ul className="flex gap-6 text-lg">
             {navLinks
               .filter((link) => link.name !== "Update Profile")
               .map((link, index) => (
                 <li key={index} data-aos="fade-up" data-aos-delay={index * 100}>
-                  <Link
-                    to={link.path}
-                    className="hover:text-primary transition-colors duration-150"
-                  >
+                  <Link to={link.path} className="hover:text-primary transition-colors duration-150">
                     {link.name}
                   </Link>
                 </li>
               ))}
           </ul>
 
-          {/* Gear + Theme Toggle Capsule */}
+          {/* Gear + Theme Toggle */}
           <div className="flex items-center gap-2 px-2 py-1 rounded-full bg-gray-200 dark:bg-gray-700">
-            {/* Gear Icon Dropdown */}
             <li className="relative group list-none">
               <div className="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-gray-800">
-                <button
-                  className="text-2xl text-gray-800 dark:text-white transition-transform duration-[1200ms] ease-in-out transform group-hover:rotate-[120deg]"
-                  aria-label="Settings"
-                >
+                <button className="text-2xl text-gray-800 dark:text-white transition-transform duration-[1200ms] group-hover:rotate-[120deg]">
                   ⛮
                 </button>
               </div>
-
-              {/* Dropdown */}
               <ul className="absolute right-0 mt-2 w-44 bg-white dark:bg-gray-900 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all duration-200 z-50">
                 <li>
                   <Link
@@ -96,19 +85,62 @@ export default function Layout() {
               </ul>
             </li>
 
-            {/* Theme Toggle */}
             <div className="w-10 h-10 flex items-center justify-center rounded-full bg-white dark:bg-gray-800">
-              <button
-                onClick={toggleTheme}
-                className="text-gray-800 dark:text-white"
-                aria-label="Toggle Theme"
-              >
+              <button onClick={toggleTheme} className="text-gray-800 dark:text-white" aria-label="Toggle Theme">
                 {darkMode ? <Sun size={20} /> : <Moon size={20} />}
               </button>
             </div>
           </div>
         </div>
+
+        {/* Hamburger for Mobile */}
+        <button className="md:hidden text-gray-800 dark:text-white" onClick={toggleSidebar}>
+          {sidebarOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
       </nav>
+
+      {/* Overlay */}
+      {sidebarOpen && (
+        <div onClick={toggleSidebar} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
+      )}
+
+      {/* Sidebar for Mobile */}
+      <div
+        className={`fixed top-0 right-0 h-full w-2/3 max-w-xs bg-white dark:bg-gray-900 shadow-lg z-50 transform ${
+          sidebarOpen ? "translate-x-0" : "translate-x-full"
+        } transition-transform duration-300 p-6 space-y-6`}
+      >
+        {navLinks.map((link, index) => (
+          <Link
+            key={index}
+            to={link.path}
+            className="block text-lg text-gray-800 dark:text-white font-medium hover:underline"
+            onClick={toggleSidebar}
+          >
+            {link.name}
+          </Link>
+        ))}
+
+        <hr className="border-gray-300 dark:border-gray-700" />
+
+        <button
+          onClick={() => {
+            toggleSidebar();
+            handleLogoutClick();
+          }}
+          className="block w-full text-left text-red-600 dark:text-red-400 font-semibold"
+        >
+          Log Out
+        </button>
+
+        <button
+          onClick={toggleTheme}
+          className="mt-4 flex items-center gap-2 text-gray-700 dark:text-white"
+        >
+          {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+          {darkMode ? "Light Mode" : "Dark Mode"}
+        </button>
+      </div>
 
       {/* Logout Confirmation Modal */}
       {showLogoutModal && (

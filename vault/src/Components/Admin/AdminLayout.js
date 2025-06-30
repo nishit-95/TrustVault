@@ -60,7 +60,7 @@ export default function AdminLayout() {
 
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-200 dark:border-gray-700">
           {/* Title + Theme button */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
             <h1 className="text-2xl font-extrabold text-[#273c75] dark:text-indigo-300 tracking-wide">
               Admin Desk
             </h1>
