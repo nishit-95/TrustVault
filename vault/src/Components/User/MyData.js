@@ -16,7 +16,7 @@ export default function MyData() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) {
+    if (token) {
       window.location.href = "/login"; // Redirect if no token
       return;
     }

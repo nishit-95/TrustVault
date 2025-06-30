@@ -27,7 +27,7 @@ export default function CompanyUpdateProfilePage() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token) {
+    if (token) {
       window.location.href = "/company-login";
       return;
     }

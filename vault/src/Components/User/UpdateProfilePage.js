@@ -20,7 +20,7 @@ export default function UpdateProfilePage() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token) {
+    if (token) {
       window.location.href = "/login"; // Redirect if no token
       return;
     }
