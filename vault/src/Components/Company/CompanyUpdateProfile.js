@@ -170,81 +170,91 @@ export default function CompanyUpdateProfilePage() {
   };
 
   return (
-    <div className="min-h-screen px-6 py-10 bg-gradient-to-br from-pink-100 via-orange-50 to-yellow-100 text-foreground">
+    <div className="min-h-screen px-6 py-10 bg-gradient-to-br from-pink-100 via-orange-50 to-yellow-100 dark:from-gray-900 dark:via-gray-800 dark:to-black text-foreground transition-colors duration-300">
       <div
-        className="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-lg"
+        className="max-w-xl mx-auto bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-lg"
         data-aos="fade-up"
       >
-        <h2 className="text-2xl font-bold mb-6 text-pink-600">Update Company Profile</h2>
-
+        <h2 className="text-2xl font-bold mb-6 text-pink-600 dark:text-pink-400">
+          Update Company Profile
+        </h2>
+  
         <div className="mb-4">
-          <label className="block mb-1 font-medium">Company Name</label>
+          <label className="block mb-1 font-medium dark:text-white">Company Name</label>
           <input
             type="text"
             name="companyName"
             value={formData.companyName}
             onChange={handleChange}
-            className="w-full px-4 py-2 rounded-md bg-gray-100 border border-gray-300"
+            className="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
             placeholder="Your Company Name"
           />
-          {errors.companyName && <p className="text-red-500 text-sm mt-1">{errors.companyName}</p>}
+          {errors.companyName && (
+            <p className="text-red-500 text-sm mt-1">{errors.companyName}</p>
+          )}
         </div>
-
+  
         <div className="mb-4">
-          <label className="block mb-1 font-medium">Email</label>
+          <label className="block mb-1 font-medium dark:text-white">Email</label>
           <input
             type="email"
             name="email"
             value={formData.email}
             disabled
-            className="w-full px-4 py-2 rounded-md bg-gray-200 border border-gray-300 cursor-not-allowed"
+            className="w-full px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-300 cursor-not-allowed"
           />
         </div>
-
+  
         <div className="mb-4">
-          <label className="block mb-1 font-medium">Phone Number</label>
+          <label className="block mb-1 font-medium dark:text-white">Phone Number</label>
           <input
             type="text"
             name="phone"
             value={formData.phone}
             maxLength={10}
             onChange={handleChange}
-            className="w-full px-4 py-2 rounded-md bg-gray-100 border border-gray-300"
+            className="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
             placeholder="10-digit number"
           />
-          {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+          {errors.phone && (
+            <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
+          )}
         </div>
-
+  
         <div className="mb-6">
-          <label className="block mb-1 font-medium">Country</label>
+          <label className="block mb-1 font-medium dark:text-white">Country</label>
           <select
             name="country"
             value={formData.country}
             onChange={handleChange}
-            className="w-full px-4 py-2 rounded-md bg-gray-100 border border-gray-300"
+            className="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
           >
             <option value="">-- Select Country --</option>
             {countries.map((country) => (
-              <option key={country} value={country}>{country}</option>
+              <option key={country} value={country}>
+                {country}
+              </option>
             ))}
           </select>
-          {errors.country && <p className="text-red-500 text-sm mt-1">{errors.country}</p>}
+          {errors.country && (
+            <p className="text-red-500 text-sm mt-1">{errors.country}</p>
+          )}
         </div>
-
+  
         <button
           onClick={handleSubmit}
-          className="w-full bg-pink-600 text-white py-3 rounded-md hover:bg-pink-700 transition"
+          className="w-full bg-pink-600 hover:bg-pink-700 text-white py-3 rounded-md transition"
         >
           Submit
         </button>
-
+  
         <button
           onClick={handleDeleteAccount}
-          className="w-full mt-4 border border-red-600 text-red-600 py-3 rounded-md hover:bg-red-600 hover:text-white transition"
+          className="w-full mt-4 border border-red-600 text-red-600 hover:bg-red-600 hover:text-white dark:hover:bg-red-700 py-3 rounded-md transition"
         >
           Delete Account
         </button>
       </div>
     </div>
-  );
+  );  
 }

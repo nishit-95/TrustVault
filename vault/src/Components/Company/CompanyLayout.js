@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Moon, Sun, Menu, X } from "lucide-react";
+import { Moon, Sun, Menu, X, LogOut } from "lucide-react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -80,8 +80,9 @@ export default function Layout() {
                 <li>
                   <button
                     onClick={handleLogoutClick}
-                    className="block w-full text-left px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                    className="flex items-center gap-2 w-full text-left px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
+                    <LogOut size={18} />
                     Log Out
                   </button>
                 </li>
@@ -135,8 +136,9 @@ export default function Layout() {
             toggleSidebar();
             handleLogoutClick();
           }}
-          className="block w-full text-left text-red-600 dark:text-red-400 font-semibold"
+          className="flex items-center gap-2 w-full text-left text-red-600 dark:text-red-400 font-semibold"
         >
+          <LogOut size={18} />
           Log Out
         </button>
 
