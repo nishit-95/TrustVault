@@ -103,11 +103,11 @@ export default function CompanyRegister() {
   return (
     <>
       <ToastContainer />
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-100 via-pink-100 to-blue-100 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-100 via-pink-100 to-blue-100 px-4 py-8 overflow-y-auto">
         <div className="flex flex-col md:flex-row w-full max-w-5xl shadow-2xl rounded-3xl overflow-hidden backdrop-blur-md bg-white/30 border border-white/20">
           
           {/* 🔵 Left Box Panel */}
-          <div className="w-full md:w-1/2 flex items-center justify-center bg-gradient-to-br from-purple-300 via-indigo-500 to-blue-500 p-10 rounded-l-3xl">
+          <div className="hidden md:flex w-full md:w-1/2 items-center justify-center bg-gradient-to-br from-purple-300 via-indigo-500 to-blue-500 p-10 rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none">
             <div className="flex flex-col items-center text-center space-y-6 relative">
               <div className="relative w-36 h-36 animate-float">
                 <div className="absolute inset-0 rounded-full bg-white to-gray-200 shadow-xl flex items-center justify-center text-4xl font-bold text-blue-700 z-10">
@@ -126,7 +126,7 @@ export default function CompanyRegister() {
           </div>
 
           {/* 🟢 Right Box Form Panel */}
-          <div className="w-full md:w-1/2 p-6 md:p-10 bg-white rounded-r-3xl">
+          <div className="w-full md:w-1/2 p-6 md:p-10 bg-white rounded-b-3xl md:rounded-r-3xl md:rounded-bl-none">
             <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">Company Sign Up</h2>
             <form className="space-y-4" onSubmit={handleSubmit}>
               {/* Company Name */}
