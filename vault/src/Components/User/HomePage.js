@@ -1,23 +1,19 @@
 // HomePage.js
-import React, { useEffect,useState } from "react";
+import React, { useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function HomePage() {
-  const [darkMode, setDarkMode] = useState(false);
   const navigate = useNavigate();
 
+  // Redirect if token exists
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       navigate("/login");
     }
   }, [navigate]);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", darkMode);
-  }, [darkMode]);
 
   useEffect(() => {
     AOS.init({ duration: 1200, once: false });

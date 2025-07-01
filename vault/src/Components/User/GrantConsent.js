@@ -104,7 +104,7 @@ export default function GrantConsent() {
           className="w-full max-w-2xl bg-white dark:bg-gray-900 shadow-lg rounded-2xl p-8"
           data-aos="zoom-in"
         >
-          <h2 className="text-2xl font-bold mb-6 text-center text-primary">
+          <h2 className="text-2xl font-bold mb-6 text-center text-primary dark:text-sky-400">
             Grant Consent
           </h2>
 

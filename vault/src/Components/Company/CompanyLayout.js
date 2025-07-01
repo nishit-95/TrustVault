@@ -1,3 +1,4 @@
+// src/Components/CompanyLayout.js
 import React, { useState, useEffect } from "react";
 import { Moon, Sun, Menu, X, LogOut } from "lucide-react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
