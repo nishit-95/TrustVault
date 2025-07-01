@@ -45,54 +45,57 @@ export default function SubscriberOfAdmin() {
           Subscriber List
         </h2>
 
-        <div className="rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900 backdrop-blur-md overflow-x-auto md:overflow-visible hide-scrollbar">
-          <table className="min-w-full table-auto text-sm text-left">
-            <thead className="bg-pink-600 text-white uppercase tracking-wider text-xs">
-              <tr>
-                <th className="px-6 py-4">Sr. No</th>
-                <th className="px-6 py-4">Email ID</th>
-                <th className="px-6 py-4">Date</th>
-                <th className="px-6 py-4">Time</th>
-                <th className="px-6 py-4">Response</th>
-              </tr>
-            </thead>
-            <tbody>
-              {subscribers.map((sub, index) => {
-                const dateObj = new Date(sub.subscribedAt);
-                const date = dateObj.toLocaleDateString();
-                const time = dateObj.toLocaleTimeString();
+        {/* Fixed Box for Table - Mobile friendly */}
+        <div className="w-full max-w-screen-sm mx-auto rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900 backdrop-blur-md">
+          <div className="overflow-x-auto hide-scrollbar">
+            <table className="min-w-[600px] table-auto text-sm text-left">
+              <thead className="bg-pink-600 text-white uppercase tracking-wider text-xs">
+                <tr>
+                  <th className="px-6 py-4">Sr. No</th>
+                  <th className="px-6 py-4">Email ID</th>
+                  <th className="px-6 py-4">Date</th>
+                  <th className="px-6 py-4">Time</th>
+                  <th className="px-6 py-4">Response</th>
+                </tr>
+              </thead>
+              <tbody>
+                {subscribers.map((sub, index) => {
+                  const dateObj = new Date(sub.subscribedAt);
+                  const date = dateObj.toLocaleDateString();
+                  const time = dateObj.toLocaleTimeString();
 
-                return (
-                  <tr
-                    key={index}
-                    onClick={() => handleRowClick(sub)}
-                    className={`cursor-pointer border-t dark:border-gray-700 ${
-                      index % 2 === 0
-                        ? "bg-white/60 dark:bg-gray-800/60"
-                        : "bg-gray-50 dark:bg-gray-800"
-                    }`}
-                    data-aos="fade-up"
-                  >
-                    <td className="px-6 py-3 font-medium">{index + 1}</td>
-                    <td className="px-6 py-3">{sub.email}</td>
-                    <td className="px-6 py-3">{date}</td>
-                    <td className="px-6 py-3">{time}</td>
-                    <td className="px-6 py-3">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleResponse(sub.email);
-                        }}
-                        className="px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded-md transition-all"
-                      >
-                        Respond
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                  return (
+                    <tr
+                      key={index}
+                      onClick={() => handleRowClick(sub)}
+                      className={`cursor-pointer border-t dark:border-gray-700 ${
+                        index % 2 === 0
+                          ? "bg-white/60 dark:bg-gray-800/60"
+                          : "bg-gray-50 dark:bg-gray-800"
+                      }`}
+                      data-aos="fade-up"
+                    >
+                      <td className="px-6 py-3 font-medium">{index + 1}</td>
+                      <td className="px-6 py-3">{sub.email}</td>
+                      <td className="px-6 py-3">{date}</td>
+                      <td className="px-6 py-3">{time}</td>
+                      <td className="px-6 py-3">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleResponse(sub.email);
+                          }}
+                          className="px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded-md transition-all"
+                        >
+                          Respond
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
