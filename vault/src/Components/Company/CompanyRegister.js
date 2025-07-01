@@ -126,7 +126,10 @@ export default function CompanyRegister() {
           </div>
 
           {/* 🟢 Right Box Form Panel */}
-          <div className="w-full md:w-1/2 p-6 md:p-10 bg-white rounded-b-3xl md:rounded-r-3xl md:rounded-bl-none">
+          <div className="w-full md:w-1/2 p-6 md:p-10 bg-white rounded-b-3xl md:rounded-r-3xl md:rounded-bl-none"
+            data-aos={window.innerWidth < 768 ? "zoom-in" : ""}
+            data-aos-delay={window.innerWidth < 768 ? "100" : ""}
+          >
             <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">Company Sign Up</h2>
             <form className="space-y-4" onSubmit={handleSubmit}>
               {/* Company Name */}
@@ -293,4 +296,3 @@ export default function CompanyRegister() {
     </>
   );
 }
-
