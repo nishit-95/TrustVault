@@ -1,13 +1,12 @@
-// HomePage.js
 import React, { useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { useNavigate } from "react-router-dom";
+import { ShieldCheck } from "lucide-react";
 
 export default function HomePage() {
   const navigate = useNavigate();
 
-  // Redirect if token exists
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -20,10 +19,11 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-300 via-blue-200 to-pink-100 dark:from-gray-900 dark:via-gray-800 dark:to-black text-foreground dark:text-white transition-colors duration-300 relative overflow-hidden">
-      {/* SVG Animated Background Layer */}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-200 via-blue-100 to-pink-100 dark:from-gray-900 dark:via-gray-800 dark:to-black transition-colors duration-300 text-gray-900 dark:text-white relative overflow-hidden">
+      
+      {/* SVG Background Glow */}
       <svg
-        className="absolute top-0 left-0 w-full h-full -z-10 animate-pulse opacity-30 dark:opacity-40"
+        className="absolute top-0 left-0 w-full h-full -z-10 animate-pulse opacity-20 dark:opacity-40"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 800 600"
         preserveAspectRatio="xMidYMid slice"
@@ -38,21 +38,35 @@ export default function HomePage() {
         <circle cx="400" cy="300" r="400" fill="url(#liveGradient)" />
       </svg>
 
-      <section className="flex items-center justify-center h-[85vh] px-4 text-center">
-        <div
-          data-aos="zoom-in"
-          className="text-4xl md:text-6xl font-extrabold text-primary dark:text-white"
-        >
-          Welcome to TrustVault 🔐
-          <p
-            data-aos="fade-up"
-            data-aos-delay="500"
-            className="text-lg md:text-2xl font-light mt-4 dark:text-white"
-          >
-            Your data, your power — securely stored and shared.
-          </p>
+      {/* Welcome Card */}
+      <div
+        data-aos="fade-up"
+        className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-gray-200 dark:border-gray-700 shadow-2xl rounded-3xl p-10 md:p-16 max-w-xl text-center"
+      >
+        {/* Animated Icon */}
+        <div className="flex justify-center mb-6">
+          <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-4 rounded-full shadow-lg animate-bounce">
+            <ShieldCheck size={36} className="text-white" />
+          </div>
         </div>
-      </section>
+
+        {/* Title */}
+        <h1
+          data-aos="zoom-in"
+          className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-indigo-500 via-pink-500 to-yellow-500 text-transparent bg-clip-text mb-4"
+        >
+          Welcome to TrustVault 
+        </h1>
+
+        {/* Subtext */}
+        <p
+          data-aos="fade-up"
+          data-aos-delay="500"
+          className="text-base md:text-lg text-gray-700 dark:text-gray-300"
+        >
+          Your data, your power — <br /> securely stored and shared with confidence.
+        </p>
+      </div>
     </div>
   );
 }

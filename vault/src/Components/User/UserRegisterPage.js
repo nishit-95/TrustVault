@@ -91,7 +91,7 @@ export default function RegisterPage() {
       try {
         const payload = { ...formData };
         delete payload.confirmPassword;
-        const response = await fetch("https://trustvault-aaqt.onrender.com/api/UserApi/Register", {
+        const response = await fetch("http://localhost:5002/api/UserApi/Register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -114,22 +114,33 @@ export default function RegisterPage() {
   return (
     <>
       <ToastContainer />
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-purple-600 via-pink-500 to-red-400 px-4">
-        <div
-          data-aos="zoom-in"
-          className="grid grid-cols-1 md:grid-cols-2 max-w-5xl w-full bg-white/20 backdrop-blur-2xl rounded-3xl shadow-[0_0_40px_rgba(0,0,0,0.2)] overflow-hidden"
-        >
-          <div className="hidden md:flex flex-col justify-center items-center relative p-10 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] opacity-90 z-0"></div>
-            <div className="relative z-10 text-white text-center space-y-6">
-              <h1 className="text-4xl font-extrabold">TrustVault</h1>
-              <p className="text-lg max-w-sm mx-auto">Experience the future of secure financial services with luxury style and high-grade security.</p>
-              <div className="w-24 h-24 rounded-full border-4 border-white flex items-center justify-center text-xl font-bold bg-gradient-to-br from-white to-gray-300 text-black mx-auto">TV</div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 via-pink-500 to-red-400 px-4 py-8 overflow-y-auto">
+        <div className="flex flex-col md:flex-row w-full max-w-5xl shadow-2xl rounded-3xl overflow-hidden backdrop-blur-md bg-white/30 border border-white/20">
+
+          {/* 🔵 Left Panel */}
+          <div className="hidden md:flex w-full md:w-1/2 items-center justify-center bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] p-10 rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none">
+            <div className="flex flex-col items-center text-center space-y-6 relative">
+              <div className="relative w-36 h-36 animate-float">
+                <div className="absolute inset-0 rounded-full bg-white shadow-xl flex items-center justify-center text-4xl font-bold text-blue-700 z-10">
+                  TV
+                </div>
+                <div className="absolute inset-0 rounded-full border-4 border-white animate-pulse-glow z-0"></div>
+              </div>
+              <h2 className="text-4xl font-bold text-white drop-shadow-lg" data-aos="fade-down">
+                Join TrustVault 🚀
+              </h2>
+              <p className="text-white text-lg max-w-md drop-shadow-sm" data-aos="fade-up" data-aos-delay="200">
+                Experience the future of secure financial services with luxury style and high-grade security.
+              </p>
             </div>
           </div>
 
-          <div className="p-8 md:p-10 bg-white/90 rounded-r-3xl">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Create your TrustVault Account</h2>
+          {/* 🟢 Right Form Panel */}
+          <div className="w-full md:w-1/2 p-6 md:p-10 bg-white rounded-b-3xl md:rounded-r-3xl md:rounded-bl-none"
+            data-aos={window.innerWidth < 768 ? "zoom-in" : ""}
+            data-aos-delay={window.innerWidth < 768 ? "100" : ""}
+          >
+            <h2 className="text-2xl bg-gradient-to-r from-indigo-500 via-pink-500 to-yellow-500 text-transparent bg-clip-text font-bold mb-6 text-center text-3x1  ">Create your TrustVault Account</h2>
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Full Name */}
               <div className="relative">
@@ -257,6 +268,27 @@ export default function RegisterPage() {
           </div>
         </div>
       </div>
+      {/* 🎨 Floating Glow Animation */}
+      <style jsx>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+        .animate-float {
+          animation: float 4s ease-in-out infinite;
+        }
+        @keyframes pulse-glow {
+          0%, 100% {
+            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+          }
+          50% {
+            box-shadow: 0 0 30px 10px rgba(255, 255, 255, 0.6);
+          }
+        }
+        .animate-pulse-glow {
+          animation: pulse-glow 3s infinite ease-in-out;
+        }
+      `}</style>
     </>
   );
 }
