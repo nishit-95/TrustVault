@@ -77,7 +77,7 @@ export default function CompanyUserOfAdmin() {
   }, []);  
 
   return (
-    <div className="min-h-screen px-4 py-6 bg-gradient-to-br from-[#fffacc] via-[#ffe0ec] to-[#ffd6e0] dark:from-gray-900 dark:to-black text-gray-800 dark:text-white">
+    <div className="min-h-screen px-4 py-6 bg-gradient-to-br from-[#fffacc] via-[#ffe0ec] to-[#ffd6e0] rounded-xl dark:from-gray-900 dark:to-black text-gray-800 dark:text-white">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-2xl sm:text-3xl font-bold mb-5 text-center text-[#273c75] dark:text-sky-400">
           Company Users
