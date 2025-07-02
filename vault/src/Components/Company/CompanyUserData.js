@@ -1,10 +1,10 @@
-// CompanyUserDocuments.js
 import React, { useEffect, useState } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
 export default function CompanyUserDocuments() {
   const [docs, setDocs] = useState([]);
+  const [selectedDoc, setSelectedDoc] = useState(null);
 
   useEffect(() => {
     AOS.init({ duration: 1200, once: false });
@@ -49,14 +49,24 @@ export default function CompanyUserDocuments() {
     alert(`Viewing document: ${docName}`);
   };
 
+  const handleRowClick = (doc) => {
+    if (window.innerWidth < 768) {
+      setSelectedDoc(doc);
+    }
+  };
+
+  const closeModal = () => setSelectedDoc(null);
+
   return (
-    <div className="h-auto overflow-y-auto min-h-screen px-6 py-8 bg-gradient-to-br from-purple-100 via-blue-50 to-pink-100 dark:from-gray-900 dark:via-gray-800 dark:to-black text-foreground dark:text-white transition-colors duration-300">
+    <div className="relative min-h-screen px-6 py-8 bg-gradient-to-br from-purple-100 via-blue-50 to-pink-100 dark:from-gray-900 dark:via-gray-800 dark:to-black text-foreground dark:text-white transition-colors duration-300">
+      
+      {/* Main Content */}
       <div className="bg-white dark:bg-gray-900 shadow-lg rounded-2xl p-6" data-aos="fade-up">
         <h2 className="text-2xl font-bold mb-6 text-center text-[#273c75] dark:text-sky-400">
           Company Document Access
         </h2>
 
-        <div className="overflow-hidden">
+        <div className="overflow-x-auto hide-scrollbar">
           <table className="min-w-full table-auto border-collapse">
             <thead>
               <tr className="bg-gray-200 dark:bg-gray-800 text-left">
@@ -72,7 +82,8 @@ export default function CompanyUserDocuments() {
               {docs.map((doc, index) => (
                 <tr
                   key={index}
-                  className="border-b border-gray-300 dark:border-gray-700"
+                  onClick={() => handleRowClick(doc)}
+                  className="border-b border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
                   data-aos="fade-up"
                   data-aos-delay={index * 100}
                 >
@@ -83,7 +94,10 @@ export default function CompanyUserDocuments() {
                   <td className="p-4">{doc.endTime}</td>
                   <td className="p-4">
                     <button
-                      onClick={() => handleView(doc.docName)}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Don't trigger row modal
+                        handleView(doc.docName);
+                      }}
                       className="px-4 py-1 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition"
                     >
                       View
@@ -102,6 +116,46 @@ export default function CompanyUserDocuments() {
           </table>
         </div>
       </div>
+
+      {/* Simple Mobile Popup */}
+      {selectedDoc && (
+        <div
+          className="absolute top-0 left-0 w-full h-full z-50 flex items-center justify-center px-4 backdrop-blur-sm"
+          onClick={closeModal}
+        >
+          <div
+            className="relative w-full max-w-sm mx-auto bg-white dark:bg-gray-900 rounded-xl p-6 text-gray-900 dark:text-white shadow-xl border border-gray-300 dark:border-gray-700"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={closeModal}
+              className="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-xl"
+            >
+              ✖
+            </button>
+            <h3 className="text-xl font-semibold mb-4 text-center text-gray-700 dark:text-sky-400">
+              Document Details
+            </h3>
+            <ul className="space-y-2 text-sm">
+              <li><strong>Document Name:</strong> {selectedDoc.docName}</li>
+              <li><strong>User Name:</strong> {selectedDoc.userName}</li>
+              <li><strong>Start Time:</strong> {selectedDoc.startTime}</li>
+              <li><strong>End Time:</strong> {selectedDoc.endTime}</li>
+            </ul>
+            <div className="mt-6 text-center">
+              <button
+                onClick={() => {
+                  handleView(selectedDoc.docName);
+                  closeModal();
+                }}
+                className="px-4 py-1 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition"
+              >
+                View
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

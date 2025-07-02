@@ -33,7 +33,7 @@ export default function AdminLayout() {
     }).then((result) => {
       if (result.isConfirmed) {
         localStorage.removeItem("token");
-        navigate("/"); // redirect to landing page
+        navigate("/");
       }
     });
   };
@@ -51,7 +51,15 @@ export default function AdminLayout() {
   }, [darkMode]);
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-tr from-[#fdfcfb] via-[#e2ebf0] to-[#f7faff] dark:from-[#1f1f2f] dark:to-[#0f0f1a] text-gray-800 dark:text-gray-100 font-sans">
+    <div className="relative flex min-h-screen bg-gradient-to-tr from-[#fdfcfb] via-[#e2ebf0] to-[#f7faff] dark:from-[#1f1f2f] dark:to-[#0f0f1a] text-gray-800 dark:text-gray-100 font-sans">
+
+      {/* Backdrop for closing sidebar on outside click */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/20 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        ></div>
+      )}
 
       {/* Sidebar */}
       <aside className={`fixed z-50 top-0 left-0 h-full w-64 transform transition-transform duration-300
@@ -59,24 +67,11 @@ export default function AdminLayout() {
         backdrop-blur-md bg-white/90 dark:bg-[#151525] shadow-2xl border-r border-gray-300 dark:border-gray-700`}>
 
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-200 dark:border-gray-700">
-          {/* Title + Theme button */}
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-extrabold text-[#273c75] dark:text-indigo-300 tracking-wide">
               Admin Desk
             </h1>
-            <button
-              onClick={toggleTheme}
-              title="Toggle Theme"
-              className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 transition"
-            >
-              {darkMode ? (
-                <Sun size={16} className="text-yellow-400" />
-              ) : (
-                <Moon size={16} className="text-gray-800" />
-              )}
-            </button>
           </div>
-
           <button onClick={() => setSidebarOpen(false)} className="md:hidden text-gray-600 dark:text-gray-300">
             <X size={22} />
           </button>
@@ -100,13 +95,25 @@ export default function AdminLayout() {
             </Link>
           ))}
 
+          {/* Divider */}
+          <hr className="border-gray-300 dark:border-gray-700 my-4" />
+
           {/* Logout Button */}
           <button
             onClick={handleLogout}
-            className="flex items-center gap-4 w-full px-4 py-2 rounded-xl font-medium text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-800 transition-all mt-4"
+            className="flex items-center gap-4 w-full px-4 py-2 rounded-xl font-medium text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-800 transition-all"
           >
             <LogOut size={20} />
             Logout
+          </button>
+
+          {/* Theme Toggle Button with Label */}
+          <button
+            onClick={toggleTheme}
+            className="flex items-center gap-4 w-full px-4 py-2 rounded-xl font-medium text-blue-600 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 transition-all"
+          >
+            {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+            Theme Change
           </button>
         </nav>
       </aside>

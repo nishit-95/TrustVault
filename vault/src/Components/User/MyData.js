@@ -163,7 +163,7 @@ export default function MyData() {
         className="bg-white dark:bg-gray-900 shadow-lg rounded-2xl p-6 mb-10"
         data-aos="fade-up"
       >
-        <h2 className="text-2xl font-bold mb-6 text-primary">
+        <h2 className="text-2xl font-bold mb-6 text-primary dark:text-sky-400">
           Upload Document
         </h2>
 
@@ -218,7 +218,7 @@ export default function MyData() {
         className="bg-white dark:bg-gray-900 shadow-lg rounded-2xl p-6"
         data-aos="fade-up"
       >
-        <h2 className="text-2xl font-bold mb-6 text-primary">
+        <h2 className="text-2xl font-bold mb-6 text-primary dark:text-sky-400">
           Uploaded Documents
         </h2>
         <div className="overflow-x-auto">

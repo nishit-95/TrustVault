@@ -17,17 +17,23 @@ namespace Repositories.Interfaces
 
         //  Get Profile
         Task<t_users?> GetUserByIdAsync(int userId);
-        Task<IEnumerable<t_users>> GetAllUsersAsync();
 
         //  Update / Delete
         Task<bool> UpdateUserAsync(t_users user);
         Task<bool> DeleteUserAsync(int userId);
 
+
+
+
+
+
+
+
+
         //  Documents
         Task<IEnumerable<t_documents>> GetUserDocumentsAsync(int userId);
         Task<t_documents> UploadDocumentAsync(t_documents document);
         Task<bool> DeleteDocumentAsync(int documentId);
-
         Task<IEnumerable<t_data_types>> GetDataTypesAsync();
 
 
@@ -35,6 +41,8 @@ namespace Repositories.Interfaces
         Task<IEnumerable<t_consents>> GetUserConsentsAsync(int userId);
         Task<t_consents> GrantConsentAsync(t_consents consent);
         Task<bool> RevokeConsentAsync(int consentId);
+
+
 
         //  Anomaly Alerts
         Task<IEnumerable<t_anomaly_alerts>> GetUserAlertsAsync(int userId);

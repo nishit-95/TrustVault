@@ -196,7 +196,7 @@ export default function UpdateProfilePage() {
         className="max-w-xl mx-auto bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-lg"
         data-aos="fade-up"
       >
-        <h2 className="text-2xl font-bold mb-6 text-primary">Update Profile</h2>
+        <h2 className="text-2xl font-bold mb-6 text-primary dark:text-sky-400">Update Profile</h2>
 
         {/* Full Name */}
         <div className="mb-4">

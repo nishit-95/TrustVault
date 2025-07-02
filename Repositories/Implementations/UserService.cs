@@ -108,75 +108,6 @@ namespace Repositories.Implementations
             return Task.FromResult<t_users?>(null);
         }
 
-
-        public Task<bool> DeleteDocumentAsync(int documentId)
-        {
-            if (_conn.State != System.Data.ConnectionState.Open)
-            {
-                _conn.Open();
-            }
-            try
-            {
-                using (var cmd = _conn.CreateCommand())
-                {
-                    cmd.CommandText = "DELETE FROM t_documents WHERE c_document_id = @DocumentId";
-                    cmd.Parameters.AddWithValue("@DocumentId", documentId);
-                    return Task.FromResult(cmd.ExecuteNonQuery() > 0);
-                }
-            }
-            catch (System.Exception)
-            {
-                Console.WriteLine("An error occurred while deleting the document.");
-                return Task.FromResult(false);
-            }
-            finally
-            {
-                if (_conn.State == System.Data.ConnectionState.Open)
-                {
-                    _conn.Close();
-                }
-            }
-        }
-
-        public Task<bool> DeleteUserAsync(int userId)
-        {
-            if (_conn.State != System.Data.ConnectionState.Open)
-            {
-                _conn.Open();
-            }
-            try
-            {
-                using (var cmd = _conn.CreateCommand())
-                {
-                    cmd.CommandText = "DELETE FROM t_users WHERE c_user_id = @UserId";
-                    cmd.Parameters.AddWithValue("@UserId", userId);
-                    return Task.FromResult(cmd.ExecuteNonQuery() > 0);
-                }
-            }
-            catch (System.Exception)
-            {
-                Console.WriteLine("An error occurred while deleting the user.");
-                return Task.FromResult(false);
-            }
-            finally
-            {
-                if (_conn.State == System.Data.ConnectionState.Open)
-                {
-                    _conn.Close();
-                }
-            }
-        }
-
-        public Task<IEnumerable<t_users>> GetAllUsersAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<t_anomaly_alerts>> GetUserAlertsAsync(int userId)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<t_users?> GetUserByIdAsync(int userId)
         {
             if (_conn.State != System.Data.ConnectionState.Open)
@@ -223,12 +154,78 @@ namespace Repositories.Implementations
             }
         }
 
-        public Task<IEnumerable<t_consents>> GetUserConsentsAsync(int userId)
+        public async Task<bool> UpdateUserAsync(t_users user)
         {
-            throw new NotImplementedException();
+            if (_conn.State != System.Data.ConnectionState.Open)
+            {
+                await _conn.OpenAsync();
+            }
+            try
+            {
+                using (var cmd = _conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                    UPDATE t_users 
+                    SET c_full_name = @FullName, 
+                        c_email = @Email, 
+                        c_phone = @Phone, 
+                        c_country = @Country 
+                    WHERE c_user_id = @UserId";
+
+                    cmd.Parameters.AddWithValue("@UserId", user.c_user_id);
+                    cmd.Parameters.AddWithValue("@FullName", user.c_full_name);
+                    cmd.Parameters.AddWithValue("@Email", user.c_email);
+                    cmd.Parameters.AddWithValue("@Phone", (object)user.c_phone ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Country", (object)user.c_country ?? DBNull.Value);
+
+                    int rowsAffected = await cmd.ExecuteNonQueryAsync();
+                    return rowsAffected > 0;
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine("An error occurred while updating the user: " + ex.Message);
+                return false;
+            }
+            finally
+            {
+                if (_conn.State == System.Data.ConnectionState.Open)
+                {
+                    await _conn.CloseAsync();
+                }
+            }
+        }
+        public Task<bool> DeleteUserAsync(int userId)
+        {
+            if (_conn.State != System.Data.ConnectionState.Open)
+            {
+                _conn.Open();
+            }
+            try
+            {
+                using (var cmd = _conn.CreateCommand())
+                {
+                    cmd.CommandText = "DELETE FROM t_users WHERE c_user_id = @UserId";
+                    cmd.Parameters.AddWithValue("@UserId", userId);
+                    return Task.FromResult(cmd.ExecuteNonQuery() > 0);
+                }
+            }
+            catch (System.Exception)
+            {
+                Console.WriteLine("An error occurred while deleting the user.");
+                return Task.FromResult(false);
+            }
+            finally
+            {
+                if (_conn.State == System.Data.ConnectionState.Open)
+                {
+                    _conn.Close();
+                }
+            }
         }
 
-        // ...existing code...
+
+
         public Task<IEnumerable<t_documents>> GetUserDocumentsAsync(int userId)
         {
             if (_conn.State != System.Data.ConnectionState.Open)
@@ -286,96 +283,6 @@ namespace Repositories.Implementations
             }
         }
 
-        public async Task<t_consents> GrantConsentAsync(t_consents consent)
-        {
-            if (_conn.State != System.Data.ConnectionState.Open)
-            {
-                _conn.Open();
-            }
-
-            using (var cmd = _conn.CreateCommand())
-            {
-                cmd.CommandText = @"
-            INSERT INTO t_consents
-                (c_user_id, c_partner_id, c_purpose, c_start_time, c_end_time, c_status, c_created_at)
-            OUTPUT INSERTED.c_consent_id
-            VALUES
-                (@c_user_id, @c_partner_id, @c_purpose, @c_start_time, @c_end_time, @c_status, @c_created_at);
-        ";
-
-                cmd.Parameters.AddWithValue("@c_user_id", consent.c_user_id);
-                cmd.Parameters.AddWithValue("@c_partner_id", consent.c_partner_id);
-                cmd.Parameters.AddWithValue("@c_purpose", consent.c_purpose ?? (object)DBNull.Value);
-                cmd.Parameters.AddWithValue("@c_start_time", consent.c_start_time);
-                cmd.Parameters.AddWithValue("@c_end_time", consent.c_end_time);
-                cmd.Parameters.AddWithValue("@c_status", consent.c_status ?? (object)DBNull.Value);
-                cmd.Parameters.AddWithValue("@c_created_at", consent.c_created_at);
-
-                var insertedId = (int)await cmd.ExecuteScalarAsync();
-                consent.c_consent_id = insertedId;
-                return consent;
-            }
-        }
-
-
-
-        public Task<bool> MarkAlertResolvedAsync(int alertId)
-        {
-            throw new NotImplementedException();
-        }
-
-
-
-
-        public Task<bool> RevokeConsentAsync(int consentId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<bool> UpdateUserAsync(t_users user)
-        {
-            if (_conn.State != System.Data.ConnectionState.Open)
-            {
-                await _conn.OpenAsync();
-            }
-            try
-            {
-                using (var cmd = _conn.CreateCommand())
-                {
-                    cmd.CommandText = @"
-                    UPDATE t_users 
-                    SET c_full_name = @FullName, 
-                        c_email = @Email, 
-                        c_phone = @Phone, 
-                        c_country = @Country 
-                    WHERE c_user_id = @UserId";
-
-                    cmd.Parameters.AddWithValue("@UserId", user.c_user_id);
-                    cmd.Parameters.AddWithValue("@FullName", user.c_full_name);
-                    cmd.Parameters.AddWithValue("@Email", user.c_email);
-                    cmd.Parameters.AddWithValue("@Phone", (object)user.c_phone ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Country", (object)user.c_country ?? DBNull.Value);
-
-                    int rowsAffected = await cmd.ExecuteNonQueryAsync();
-                    return rowsAffected > 0;
-                }
-            }
-            catch (System.Exception ex)
-            {
-                Console.WriteLine("An error occurred while updating the user: " + ex.Message);
-                return false;
-            }
-            finally
-            {
-                if (_conn.State == System.Data.ConnectionState.Open)
-                {
-                    await _conn.CloseAsync();
-                }
-            }
-        }
-
-
-
         public Task<t_documents> UploadDocumentAsync(t_documents document)
         {
             if (_conn.State != System.Data.ConnectionState.Open)
@@ -407,6 +314,34 @@ namespace Repositories.Implementations
             {
                 Console.WriteLine("An error occurred while uploading the document.");
                 return Task.FromResult<t_documents>(null);
+            }
+            finally
+            {
+                if (_conn.State == System.Data.ConnectionState.Open)
+                {
+                    _conn.Close();
+                }
+            }
+        }
+        public Task<bool> DeleteDocumentAsync(int documentId)
+        {
+            if (_conn.State != System.Data.ConnectionState.Open)
+            {
+                _conn.Open();
+            }
+            try
+            {
+                using (var cmd = _conn.CreateCommand())
+                {
+                    cmd.CommandText = "DELETE FROM t_documents WHERE c_document_id = @DocumentId";
+                    cmd.Parameters.AddWithValue("@DocumentId", documentId);
+                    return Task.FromResult(cmd.ExecuteNonQuery() > 0);
+                }
+            }
+            catch (System.Exception)
+            {
+                Console.WriteLine("An error occurred while deleting the document.");
+                return Task.FromResult(false);
             }
             finally
             {
@@ -460,10 +395,70 @@ namespace Repositories.Implementations
 
 
 
+        public Task<IEnumerable<t_consents>> GetUserConsentsAsync(int userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<t_consents> GrantConsentAsync(t_consents consent)
+        {
+            if (_conn.State != System.Data.ConnectionState.Open)
+            {
+                _conn.Open();
+            }
+
+            using (var cmd = _conn.CreateCommand())
+            {
+                cmd.CommandText = @"
+            INSERT INTO t_consents
+                (c_user_id, c_partner_id, c_purpose, c_start_time, c_end_time, c_status, c_created_at)
+            OUTPUT INSERTED.c_consent_id
+            VALUES
+                (@c_user_id, @c_partner_id, @c_purpose, @c_start_time, @c_end_time, @c_status, @c_created_at);
+        ";
+
+                cmd.Parameters.AddWithValue("@c_user_id", consent.c_user_id);
+                cmd.Parameters.AddWithValue("@c_partner_id", consent.c_partner_id);
+                cmd.Parameters.AddWithValue("@c_purpose", consent.c_purpose ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@c_start_time", consent.c_start_time);
+                cmd.Parameters.AddWithValue("@c_end_time", consent.c_end_time);
+                cmd.Parameters.AddWithValue("@c_status", consent.c_status ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@c_created_at", consent.c_created_at);
+
+                var insertedId = (int)await cmd.ExecuteScalarAsync();
+                consent.c_consent_id = insertedId;
+                return consent;
+            }
+        }
+
+
+        public Task<bool> RevokeConsentAsync(int consentId)
+        {
+            throw new NotImplementedException();
+        }
+
+
+
+
+
+        public Task<IEnumerable<t_anomaly_alerts>> GetUserAlertsAsync(int userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> MarkAlertResolvedAsync(int alertId)
+        {
+            throw new NotImplementedException();
+        }
+
+
+
+
+
         //Helper Class
+
         private string HashPass(string password)
         {
-
             using (SHA256 sha256 = SHA256.Create())
             {
                 byte[] bytes = Encoding.UTF8.GetBytes(password);
@@ -471,7 +466,5 @@ namespace Repositories.Implementations
                 return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
             }
         }
-
-
     }
 }
