@@ -4,6 +4,8 @@
     "lucide-react": "^0.516.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-toastify": "^11.0.5"
+    "react-toastify": "^11.0.5",
+    "swal": "^0.1.0",
+    "tailwind-scrollbar-hide": "^4.0.0"
   }
 }
