@@ -11,6 +11,9 @@ import AboutSection from "./Components/LandingPage/AboutSection";
 import ClientsSection from "./Components/LandingPage/ClientsSection";
 import Footer from "./Components/LandingPage/Footer";
 
+// Chatbot
+import ChatWidget from "./Components/Chatbot/ChatWidget";
+
 // Login and Registration 
 import RegisterPage from "./Components/User/UserRegisterPage"; 
 import LoginPage from "./Components/User/UserLoginPage";
@@ -50,7 +53,7 @@ function App() {
     AOS.refresh();
   }, []);
 
-  // ✅ Landing page component grouped
+  // Landing page component grouped
   const LandingPage = () => (
     <>
       <Navbar />
@@ -64,7 +67,7 @@ function App() {
 
   return (
     <Router>
-      <div className="min-h-screen bg-white dark:bg-gray-900">
+      <div className="min-h-screen bg-white dark:bg-gray-900 relative">
         <Routes>
           {/* Landing Page */}
           <Route path="/" element={<LandingPage />} />
@@ -102,6 +105,9 @@ function App() {
             <Route path="/subscriber-of-admin" element={<SubscriberOfAdmin />} /> 
           </Route>
         </Routes>
+
+        {/*  Floating Chat Widget visible on all pages */}
+        <ChatWidget />
       </div>
     </Router>
   );
